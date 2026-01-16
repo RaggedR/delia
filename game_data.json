@@ -1,0 +1,509 @@
+{
+  "meta": {
+    "title": "PhantomThrill",
+    "subtitle": "A Phantom Thief Visual Novel",
+    "credits": {
+      "game_designer": "Celia Kok",
+      "prompter": "Robin Langer",
+      "software_engineer": "Claude Code"
+    },
+    "inspired_by": ["Miami Nights 2", "Persona", "Ace Attorney"]
+  },
+
+  "initial_state": {
+    "player": {
+      "name": "Alex",
+      "thief_name": "Thrill",
+      "gender": "male",
+      "skin_tone": "#ffdbac",
+      "hair_color": "#1a1a1a",
+      "shirt_color": "#e94560"
+    },
+    "stats": {
+      "money": 50,
+      "hunger": 70,
+      "hygiene": 80,
+      "health": 90,
+      "charisma": 40,
+      "fitness": 30,
+      "knowledge": 50,
+      "criminality": 10
+    },
+    "day": 1,
+    "time_of_day": "Morning",
+    "current_location": "motel",
+    "chapter": 1,
+    "story_progress": 0,
+    "inventory": [],
+    "notes": [],
+    "flags": {
+      "met_cal": false,
+      "found_underground": false,
+      "accepted_heist": false,
+      "completed_museum_heist": false,
+      "met_inspector": false,
+      "got_jade_whip_info": false,
+      "visited_grocery": false,
+      "visited_mall": false,
+      "visited_restaurant": false,
+      "visited_gym": false,
+      "visited_bar": false,
+      "visited_police": false,
+      "visited_motel": false
+    },
+    "heist": {
+      "phase": "none",
+      "intel": [],
+      "suspicion": 0
+    }
+  },
+
+  "locations": {
+    "motel": {
+      "name": "Rundown Motel",
+      "icon": "🏨",
+      "description": "Your temporary home. Cheap but functional.",
+      "actions": ["Sleep", "Shower", "Check belongings"],
+      "locked": false
+    },
+    "clinic": {
+      "name": "Outskirts Clinic",
+      "icon": "🏥",
+      "description": "A small clinic on the outskirts of the city.",
+      "actions": ["Get checkup", "Buy medicine", "Talk to receptionist"],
+      "locked": false
+    },
+    "underground": {
+      "name": "Underground Market",
+      "icon": "🕳️",
+      "description": "A hidden market where anything can be found... for a price.",
+      "actions": ["Browse goods", "Talk to dealer", "Check job board"],
+      "locked": true,
+      "unlock_flag": "found_underground"
+    },
+    "grocery": {
+      "name": "Grocery Store",
+      "icon": "🛒",
+      "description": "A modest grocery store in the suburbs.",
+      "actions": ["Buy food", "Check job listings", "Talk to cashier"],
+      "locked": false
+    },
+    "mall": {
+      "name": "City Mall",
+      "icon": "🏬",
+      "description": "A bustling shopping center in the city.",
+      "actions": ["Shop for clothes", "Visit arcade", "Visit bookstore"],
+      "locked": false
+    },
+    "restaurant": {
+      "name": "Fine Dining",
+      "icon": "🍽️",
+      "description": "An upscale restaurant. Expensive but classy.",
+      "actions": ["Eat meal", "Apply for job"],
+      "locked": false
+    },
+    "gym": {
+      "name": "Fitness Center",
+      "icon": "🏋️",
+      "description": "A well-equipped gym. Membership has its benefits.",
+      "actions": ["Work out", "Check job listings"],
+      "locked": false
+    },
+    "bar": {
+      "name": "Night Bar",
+      "icon": "🍸",
+      "description": "A dimly lit bar. Good for gathering information.",
+      "actions": ["Order drink", "Talk to bartender"],
+      "locked": false
+    },
+    "museum": {
+      "name": "City Museum",
+      "icon": "🏛️",
+      "description": "The grand City Museum. Home of the Jade Whip.",
+      "actions": ["Admire exhibits", "Study layout", "Talk to guard"],
+      "locked": false
+    },
+    "police": {
+      "name": "Police Station",
+      "icon": "🚔",
+      "description": "Better stay on your best behavior here.",
+      "actions": ["Check wanted posters"],
+      "locked": false
+    },
+    "school": {
+      "name": "Elite Academy",
+      "icon": "🎓",
+      "description": "An elite school. Chapter 2 content.",
+      "actions": ["Look around", "Check job listings"],
+      "locked": true
+    },
+    "bank": {
+      "name": "Central Bank",
+      "icon": "🏦",
+      "description": "Fort Knox has nothing on this place. Chapter 5 content.",
+      "actions": ["Check account", "Observe security"],
+      "locked": true
+    }
+  },
+
+  "actions": {
+    "Sleep": {
+      "effects": {
+        "health": 20,
+        "hunger": -10
+      },
+      "advance_time": true,
+      "message": "You feel rested. +20 Health, -10 Hunger"
+    },
+    "Shower": {
+      "effects": {
+        "hygiene": "full"
+      },
+      "message": "Fresh and clean! Hygiene restored."
+    },
+    "Buy food": {
+      "cost": 10,
+      "effects": {
+        "hunger": 30
+      },
+      "message": "Bought groceries. -$10, +30 Hunger"
+    },
+    "Work out": {
+      "cost": 5,
+      "effects": {
+        "fitness": 10,
+        "hunger": -15
+      },
+      "message": "Good workout! -$5, +10 Fitness, -15 Hunger"
+    },
+    "Visit bookstore": {
+      "cost": 15,
+      "effects": {
+        "knowledge": 15
+      },
+      "message": "Bought some books. -$15, +15 Knowledge"
+    },
+    "Eat meal": {
+      "cost": 20,
+      "effects": {
+        "hunger": "full",
+        "charisma": 5
+      },
+      "message": "Delicious meal! -$20, Full Hunger, +5 Charisma"
+    },
+    "Order drink": {
+      "cost": 10,
+      "effects": {
+        "charisma": 10
+      },
+      "message": "The bartender shares some rumors. -$10, +10 Charisma"
+    },
+    "Study layout": {
+      "effects": {
+        "knowledge": 5
+      },
+      "add_intel": "Guard rotation: Every 15 minutes",
+      "message": "You memorize the museum layout. +5 Knowledge"
+    },
+    "Talk to guard": {
+      "effects": {
+        "charisma": 5
+      },
+      "add_intel": "Security system: Laser grid at night",
+      "message": "You chat with a guard and learn about the security. +5 Charisma"
+    },
+    "Browse goods": {
+      "cost": 15,
+      "effects": {
+        "criminality": 15
+      },
+      "message": "You buy some... questionable tools. -$15, +15 Criminality"
+    },
+    "Talk to dealer": {
+      "effects": {
+        "criminality": 5,
+        "knowledge": 5
+      },
+      "message": "The dealer shares underworld secrets. +5 Criminality, +5 Knowledge"
+    },
+    "Check belongings": {
+      "effects": {},
+      "message": "A worn suitcase, some spare clothes, and memories of better days."
+    },
+    "Get checkup": {
+      "effects": {},
+      "message": "The doctor checks your vitals. \"You're fine. Just stressed. Get some rest.\""
+    },
+    "Buy medicine": {
+      "effects": {},
+      "message": "You browse the shelves. Aspirin, bandages, antacids. Nothing you need right now."
+    },
+    "Check job listings": {
+      "effects": {},
+      "message": "\"Now Hiring: Minimum wage, maximum effort.\" The usual dead ends."
+    },
+    "Talk to cashier": {
+      "effects": {},
+      "message": "\"Paper or plastic?\" The cashier barely looks up from their phone."
+    },
+    "Shop for clothes": {
+      "effects": {},
+      "message": "You window shop. Nice things for people with nice incomes."
+    },
+    "Visit arcade": {
+      "effects": {},
+      "message": "Flashing lights, electronic beeps. You watch a kid set a high score."
+    },
+    "Apply for job": {
+      "effects": {},
+      "message": "\"We'll call you.\" The manager's smile doesn't reach their eyes."
+    },
+    "Talk to bartender": {
+      "effects": {},
+      "message": "The bartender wipes a glass. \"Rough day?\" You nod. They understand."
+    },
+    "Admire exhibits": {
+      "effects": {},
+      "message": "Ancient pottery, faded paintings, dusty artifacts. History under glass."
+    },
+    "Check wanted posters": {
+      "effects": {},
+      "message": "Small-time crooks and petty thieves stare back at you from faded posters.",
+      "message_after_heist": "You see a sketch that looks vaguely like you... unsettling."
+    },
+    "Check job board": {
+      "effects": {},
+      "message": "Coded messages, cryptic symbols. Jobs for people with... flexible morals."
+    }
+  },
+
+  "dialogues": {
+    "intro": [
+      {"speaker": "Narrator", "text": "Another rejection letter. Another door closed."},
+      {"speaker": "Narrator", "text": "You stare at the cracked ceiling of your motel room, the weight of failure pressing down."},
+      {"speaker": "{player_name}", "text": "(Thinking) Three months since graduation. Dozens of applications. Zero offers."},
+      {"speaker": "{player_name}", "text": "(Thinking) My savings are running out. I need to find something... anything."},
+      {"speaker": "Narrator", "text": "Your phone buzzes. A notification from a job hunting app: \"0 new matches.\""},
+      {"speaker": "{player_name}", "text": "...Great."},
+      {"speaker": "Narrator", "text": "Perhaps exploring the city might turn up some opportunities. Or at least, a distraction."}
+    ],
+
+    "clinic_meet_cal": [
+      {"speaker": "Narrator", "text": "You enter the small clinic. The fluorescent lights flicker overhead."},
+      {"speaker": "???", "text": "Welcome! First time here?"},
+      {"speaker": "Narrator", "text": "A cheerful receptionist waves at you from behind the counter."},
+      {"speaker": "Cal", "text": "I'm Cal. What brings you to our little clinic?"},
+      {
+        "speaker": "{player_name}",
+        "text": "Just... looking for some medicine. Headaches.",
+        "choices": [
+          {"text": "Ask about job openings", "effect": {"charisma": 5}},
+          {"text": "Ask about the area", "effect": {"flag": "found_underground"}},
+          {"text": "Just get the medicine", "effect": {}}
+        ]
+      },
+      {"speaker": "Cal", "text": "You look like you've had a rough time. New to the city?"},
+      {"speaker": "{player_name}", "text": "Yeah. Still trying to find my footing."},
+      {"speaker": "Cal", "text": "The city can be tough. But there are... opportunities, if you know where to look."},
+      {"speaker": "Cal", "text": "There's a basement entrance behind this building. If you're desperate enough."},
+      {"speaker": "Narrator", "text": "Cal's eyes hold a knowing glint. What kind of opportunities?"}
+    ],
+
+    "underground_first": [
+      {"speaker": "Narrator", "text": "You descend into the underground market. The air is thick with secrets."},
+      {"speaker": "???", "text": "Fresh meat, huh?"},
+      {"speaker": "Narrator", "text": "A figure emerges from the shadows, their face obscured."},
+      {"speaker": "Shadowy Figure", "text": "Looking for work? The kind that pays... generously?"},
+      {"speaker": "{player_name}", "text": "What kind of work?"},
+      {"speaker": "Shadowy Figure", "text": "The Phantom Thief Association is always looking for talent."},
+      {"speaker": "Shadowy Figure", "text": "There's a job coming up. The City Museum. The Jade Whip."},
+      {"speaker": "Shadowy Figure", "text": "Worth millions. And you'd get a cut. Interested?"},
+      {
+        "speaker": "{player_name}",
+        "text": "...",
+        "choices": [
+          {"text": "Tell me more.", "effect": {"flag": "accepted_heist", "criminality": 10}},
+          {"text": "This is crazy. I'm leaving.", "effect": {"ending": "rejected"}}
+        ]
+      }
+    ],
+
+    "accept_heist": [
+      {"speaker": "Shadowy Figure", "text": "Smart choice. Here's what you need to know."},
+      {"speaker": "Shadowy Figure", "text": "The Jade Whip is in the east wing of the museum. Heavy security."},
+      {"speaker": "Shadowy Figure", "text": "You'll need to scout the place first. Learn the guard rotations."},
+      {"speaker": "Shadowy Figure", "text": "When you're ready, come back here. We'll set a date."},
+      {"speaker": "Narrator", "text": "You receive a burner phone and a basic disguise kit."},
+      {"speaker": "Narrator", "text": "Your journey as a phantom thief begins..."}
+    ],
+
+    "museum_scout": [
+      {"speaker": "Narrator", "text": "The City Museum stands before you, grand and imposing."},
+      {"speaker": "Narrator", "text": "Security guards patrol the entrance. Cameras dot every corner."},
+      {"speaker": "{player_name}", "text": "(Thinking) I need to learn the layout without raising suspicion."},
+      {"speaker": "Narrator", "text": "You spot the Jade Whip in a display case in the east wing."},
+      {"speaker": "Narrator", "text": "It gleams under the spotlights, practically begging to be taken."}
+    ],
+
+    "inspector_meet": [
+      {"speaker": "Narrator", "text": "As you study the security, someone approaches."},
+      {"speaker": "???", "text": "Fascinating piece, isn't it? The Jade Whip."},
+      {"speaker": "Narrator", "text": "A sharp-eyed individual in a trenchcoat stands beside you."},
+      {"speaker": "Inspector Mori", "text": "I'm Inspector Mori. Phantom Thief Task Force."},
+      {"speaker": "Inspector Mori", "text": "We've been getting reports of suspicious activity around the museum."},
+      {"speaker": "Inspector Mori", "text": "You wouldn't happen to know anything about that, would you?"},
+      {
+        "speaker": "{player_name}",
+        "text": "...",
+        "choices": [
+          {"text": "Play dumb. \"Just admiring the art.\"", "effect": {"charisma": 5}},
+          {"text": "Stay calm. \"First time visiting.\"", "effect": {"knowledge": 5}},
+          {"text": "Get nervous. \"I-I should go...\"", "effect": {"criminality": 15, "suspicion": 20}}
+        ]
+      },
+      {"speaker": "Inspector Mori", "text": "Hmm. Well, enjoy your visit. And remember..."},
+      {"speaker": "Inspector Mori", "text": "Crime never pays. Not in my city."},
+      {"speaker": "Narrator", "text": "The Inspector walks away, but you feel their eyes on your back."}
+    ],
+
+    "grocery_visit": [
+      {"speaker": "Narrator", "text": "The fluorescent lights buzz overhead. A bored cashier scrolls through their phone."},
+      {"speaker": "{player_name}", "text": "(Thinking) Just a regular grocery store. Nothing special here."},
+      {"speaker": "Narrator", "text": "A job listing board catches your eye near the exit. 'Now Hiring - Flexible Hours'"},
+      {"speaker": "{player_name}", "text": "(Thinking) Honest work... but would it ever be enough?"}
+    ],
+
+    "mall_visit": [
+      {"speaker": "Narrator", "text": "The city mall buzzes with activity. Shoppers drift between stores, bags in hand."},
+      {"speaker": "{player_name}", "text": "(Thinking) Everyone here has money to spend. Must be nice."},
+      {"speaker": "Narrator", "text": "You pass by designer boutiques, their price tags making you wince."},
+      {"speaker": "{player_name}", "text": "(Thinking) The arcade might be fun. Or I could pick up a book..."}
+    ],
+
+    "restaurant_visit": [
+      {"speaker": "Narrator", "text": "Crystal chandeliers. White tablecloths. The clink of expensive silverware."},
+      {"speaker": "{player_name}", "text": "(Thinking) This place screams money. Way out of my league."},
+      {"speaker": "Narrator", "text": "A waiter glances at your clothes with barely concealed disdain."},
+      {"speaker": "{player_name}", "text": "(Thinking) Maybe someday I'll walk in here like I own the place."}
+    ],
+
+    "gym_visit": [
+      {"speaker": "Narrator", "text": "The smell of sweat and determination fills the air."},
+      {"speaker": "{player_name}", "text": "(Thinking) Getting stronger couldn't hurt. You never know when you'll need to run."},
+      {"speaker": "Narrator", "text": "Muscular regulars eye you as you walk past the equipment."},
+      {"speaker": "{player_name}", "text": "(Thinking) Everyone starts somewhere, right?"}
+    ],
+
+    "bar_visit": [
+      {"speaker": "Narrator", "text": "Dim lights. Jazz playing softly. The clink of glasses."},
+      {"speaker": "{player_name}", "text": "(Thinking) This place has atmosphere. People come here to talk... and to listen."},
+      {"speaker": "Narrator", "text": "The bartender polishes a glass, watching the room with knowing eyes."},
+      {"speaker": "{player_name}", "text": "(Thinking) Bars are where secrets are traded. Could be useful."}
+    ],
+
+    "police_visit": [
+      {"speaker": "Narrator", "text": "The police station looms before you. Officers bustle about with purpose."},
+      {"speaker": "{player_name}", "text": "(Thinking) Why am I here? This feels like a bad idea."},
+      {"speaker": "Narrator", "text": "A wanted poster board catches your attention. Petty thieves, mostly."},
+      {"speaker": "{player_name}", "text": "(Thinking) I should probably leave before someone gets suspicious."}
+    ],
+
+    "motel_return": [
+      {"speaker": "Narrator", "text": "Back to your temporary home. The familiar creak of the door greets you."},
+      {"speaker": "{player_name}", "text": "(Thinking) It's not much, but it's all I've got right now."}
+    ]
+  },
+
+  "heist_sequences": {
+    "museum": {
+      "infiltration": [
+        {
+          "scene": "entrance",
+          "icon": "🚪",
+          "description": "You stand before the museum's service entrance. The heist begins now.",
+          "options": [
+            {"text": "Pick the lock", "stat": "criminality", "req": 30, "success": "lockpick"},
+            {"text": "Bluff the guard", "stat": "charisma", "req": 50, "success": "bluff"},
+            {"text": "Find another way", "stat": "knowledge", "req": 40, "success": "alternate"}
+          ]
+        },
+        {
+          "scene": "hallway",
+          "icon": "🏃",
+          "description": "You're inside. Security cameras sweep the hallway ahead.",
+          "options": [
+            {"text": "Time the cameras and dash", "stat": "fitness", "req": 40, "success": "dash"},
+            {"text": "Disable the camera system", "stat": "knowledge", "req": 60, "success": "disable"},
+            {"text": "Create a distraction", "stat": "charisma", "req": 40, "success": "distract"}
+          ]
+        }
+      ],
+      "calling_card": [
+        {
+          "scene": "exhibit",
+          "icon": "💎",
+          "description": "The Jade Whip gleams before you. Laser sensors crisscross the display.",
+          "options": [
+            {"text": "Acrobatic maneuvers", "stat": "fitness", "req": 50, "success": "acrobat"},
+            {"text": "Mirror trick", "stat": "knowledge", "req": 50, "success": "mirror"},
+            {"text": "Distract the guard", "stat": "charisma", "req": 55, "success": "charm_guard"},
+            {"text": "Smoke bomb", "stat": "criminality", "req": 40, "success": "smoke"}
+          ]
+        }
+      ],
+      "escape": [
+        {
+          "scene": "getaway",
+          "icon": "🏃‍♂️",
+          "description": "Alarms blare! Guards are converging on your position!",
+          "options": [
+            {"text": "Sprint to the exit", "stat": "fitness", "req": 60, "success": "sprint"},
+            {"text": "Blend with the crowd", "stat": "charisma", "req": 60, "success": "blend"},
+            {"text": "Use the secret passage", "stat": "knowledge", "req": 70, "success": "secret"}
+          ]
+        },
+        {
+          "scene": "confrontation",
+          "icon": "🚔",
+          "description": "Inspector Mori blocks your path! \"End of the line, thief!\"",
+          "options": [
+            {"text": "Outwit them with words", "stat": "charisma", "req": 70, "success": "outwit"},
+            {"text": "Make a daring escape", "stat": "fitness", "req": 70, "success": "daring"},
+            {"text": "Trigger prepared distraction", "stat": "knowledge", "req": 70, "success": "distract_mori"},
+            {"text": "Reveal your calling card", "stat": "criminality", "req": 50, "success": "card", "qte": true}
+          ]
+        }
+      ]
+    }
+  },
+
+  "endings": {
+    "rejected": {
+      "title": "The Safe Path",
+      "text": "You walked away from the underground. Perhaps a normal life awaits... but this isn't that story."
+    },
+    "caught": {
+      "title": "Busted!",
+      "text": "Inspector Mori caught you! \"I knew you were suspicious from the start.\""
+    },
+    "starvation": {
+      "title": "Starved",
+      "text": "You collapsed from hunger. The phantom thief dream ends here..."
+    },
+    "health": {
+      "title": "Exhausted",
+      "text": "Your health gave out. Take better care of yourself next time..."
+    },
+    "chapter1_complete": {
+      "title": "Chapter 1 Complete!",
+      "text": "Congratulations! You completed Chapter 1.\n\nThe Jade Whip is yours, and Inspector Mori is on your trail.\n\nMore chapters coming soon..."
+    }
+  },
+
+  "objectives": {
+    "start": "Explore the city. Find a job or... other opportunities.",
+    "found_underground": "You learned about the underground market behind the clinic...",
+    "accepted_heist": "Scout the City Museum. Learn its layout and security.",
+    "met_inspector": "Return to the underground market when ready for the heist."
+  }
+}

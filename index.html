@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhantomThrill</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Title Screen */
+        #title-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #title-screen h1 {
+            font-size: 4rem;
+            color: #e94560;
+            text-shadow: 0 0 20px #e94560, 0 0 40px #e94560;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #e94560, 0 0 40px #e94560; }
+            to { text-shadow: 0 0 30px #e94560, 0 0 60px #e94560, 0 0 80px #e94560; }
+        }
+
+        #title-screen p {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: 2px solid #e94560;
+            color: #e94560;
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover {
+            background: #e94560;
+            color: #1a1a2e;
+            box-shadow: 0 0 20px #e94560;
+        }
+
+        /* Credits Screen */
+        #credits-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        #credits-screen h1 {
+            font-size: 3rem;
+            color: #e94560;
+            text-shadow: 0 0 20px #e94560, 0 0 40px #e94560;
+            margin-bottom: 10px;
+        }
+
+        #credits-screen > p {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 40px;
+        }
+
+        .credits-list {
+            margin-bottom: 30px;
+        }
+
+        .credit-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+            margin: 15px 0;
+            font-size: 1.3rem;
+        }
+
+        .credit-role {
+            color: #aaa;
+            text-align: right;
+        }
+
+        .credit-name {
+            color: #e94560;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .credits-inspired {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        /* Character Creation */
+        #character-creation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        #character-creation h2 {
+            color: #e94560;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .creation-panel {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 10px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .preview-box {
+            width: 200px;
+            height: 300px;
+            background: #2a2a4e;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .character-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .char-head {
+            width: 80px;
+            height: 90px;
+            border-radius: 40px 40px 35px 35px;
+            position: relative;
+            background: #ffdbac;
+        }
+
+        .char-eyes {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .char-eye {
+            width: 10px;
+            height: 10px;
+            background: #333;
+            border-radius: 50%;
+        }
+
+        .char-mouth {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 8px;
+            border-bottom: 3px solid #333;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .char-hair {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: 40px;
+            background: #333;
+            border-radius: 50px 50px 0 0;
+        }
+
+        .char-hair.female {
+            height: 50px;
+            width: 90px;
+            top: -10px;
+            border-radius: 50px 50px 20px 20px;
+        }
+
+        .hair-strand {
+            position: absolute;
+            top: 45px;
+            width: 25px;
+            height: 60px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .hair-strand.left {
+            left: -5px;
+        }
+
+        .hair-strand.right {
+            right: -5px;
+        }
+
+        .char-body {
+            width: 100px;
+            height: 70px;
+            background: #e94560;
+            border-radius: 10px 10px 20px 20px;
+            margin-top: -5px;
+            position: relative;
+        }
+
+        .char-neck {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 15px;
+            background: inherit;
+            background: #ffdbac;
+        }
+
+        .options-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .option-row label {
+            width: 100px;
+            color: #aaa;
+        }
+
+        .option-row input, .option-row select {
+            padding: 8px 15px;
+            background: #2a2a4e;
+            border: 1px solid #444;
+            color: #eee;
+            border-radius: 5px;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .color-btn.selected {
+            border-color: #e94560;
+        }
+
+        /* Main Game Area */
+        #game-area {
+            flex: 1;
+            display: none;
+            position: relative;
+        }
+
+        #game-area.active {
+            display: block !important;
+        }
+
+        /* Main content wrapper (map + dialogue) */
+        #main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            margin-right: 250px;
+        }
+
+        /* Main Content Area */
+        #map-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        #game-scene {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Location Navigation Bar */
+        #location-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 2px solid #333;
+        }
+
+        .location {
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .location:hover {
+            border-color: #e94560;
+            transform: scale(1.05);
+        }
+
+        .location.current {
+            border-color: #4ecdc4;
+            box-shadow: 0 0 15px #4ecdc4;
+        }
+
+        .location.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .location-icon {
+            font-size: 1.5rem;
+        }
+
+        .location-name {
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+
+        /* Right Sidebar */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 100vh;
+            background: #0a0a15;
+            border-left: 2px solid #e94560;
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        #sidebar.active {
+            display: flex;
+        }
+
+        /* Scrollbar styling */
+        #sidebar *::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #sidebar *::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        #sidebar *::-webkit-scrollbar-thumb {
+            background: #e94560;
+            border-radius: 5px;
+        }
+
+        #sidebar *::-webkit-scrollbar-thumb:hover {
+            background: #ff6b8a;
+        }
+
+        /* Stats Panel */
+        #stats-panel {
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            flex-shrink: 0;
+            max-height: 45%;
+            overflow-y: scroll;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .stat-name {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .stat-bar {
+            width: 80px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .stat-hunger .stat-fill { background: #ff6b6b; }
+        .stat-hygiene .stat-fill { background: #4ecdc4; }
+        .stat-health .stat-fill { background: #95e1a3; }
+        .stat-charisma .stat-fill { background: #dda0dd; }
+        .stat-fitness .stat-fill { background: #ffa07a; }
+        .stat-knowledge .stat-fill { background: #87ceeb; }
+        .stat-criminality .stat-fill { background: #9370db; }
+        .stat-money .stat-fill { background: #ffd700; }
+
+        /* Phone UI */
+        #phone-ui {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        #phone-header {
+            background: #333;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        #phone-content {
+            padding: 15px;
+            flex: 1;
+            overflow-y: scroll;
+            min-height: 50px;
+        }
+
+        .notification {
+            background: rgba(233, 69, 96, 0.2);
+            border-left: 3px solid #e94560;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 0 5px 5px 0;
+            font-size: 0.85rem;
+        }
+
+        #phone-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px;
+            background: #222;
+            flex-shrink: 0;
+        }
+
+        .phone-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px;
+            background: #333;
+            border: none;
+            color: #eee;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .phone-btn:hover {
+            background: #e94560;
+        }
+
+        /* Dialogue Box - Fixed Bottom Bar */
+        #dialogue-box {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 250px;
+            background: rgba(0,0,0,0.95);
+            border-top: 3px solid #e94560;
+            padding: 15px 20px;
+            display: none;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 600;
+        }
+
+        #dialogue-inner {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        #dialogue-left {
+            flex: 1;
+        }
+
+        #speaker-name {
+            color: #e94560;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        #dialogue-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        #dialogue-right {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+
+        #dialogue-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .choice-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #eee;
+            padding: 10px 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .choice-btn:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.2);
+        }
+
+        #dialogue-continue {
+            text-align: right;
+            color: #e94560;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 15px;
+            border: 2px solid #e94560;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+            float: right;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                box-shadow: 0 0 5px #e94560;
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 15px #e94560;
+            }
+        }
+
+        /* Location Scene */
+        #location-scene {
+            position: absolute;
+            left: 0;
+            right: 250px;
+            height: 100%;
+            background: #1a1a2e;
+            display: none;
+            z-index: 150;
+        }
+
+        #scene-background {
+            width: 100%;
+            height: 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8rem;
+            background: linear-gradient(to bottom, #2a2a4e 0%, #1a1a2e 100%);
+            pointer-events: none;
+        }
+
+        #scene-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: #e94560;
+            pointer-events: none;
+        }
+
+        #scene-actions {
+            position: absolute;
+            bottom: 150px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .scene-action-btn {
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #444;
+            color: #eee;
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+
+        .scene-action-btn:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.3);
+        }
+
+        #leave-location-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #666;
+            color: #eee;
+            padding: 10px 20px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        #scene-notification {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(233, 69, 96, 0.9);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 20;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        #scene-notification.visible {
+            opacity: 1;
+        }
+
+        /* Heist Mode */
+        #heist-mode {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #0a0a1a;
+            display: none;
+            z-index: 300;
+        }
+
+        #heist-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(233, 69, 96, 0.9);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        #heist-phase {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        #heist-content {
+            position: absolute;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #heist-scene-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+        }
+
+        #heist-description {
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        #heist-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .heist-option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #444;
+            color: #eee;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .heist-option:hover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.2);
+        }
+
+        .heist-option .stat-req {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .heist-option .stat-req.met { color: #4ecdc4; }
+        .heist-option .stat-req.not-met { color: #e94560; }
+
+        /* QTE */
+        #qte-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 400;
+        }
+
+        #qte-prompt {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        #qte-key {
+            width: 100px;
+            height: 100px;
+            background: #e94560;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            50% { transform: scale(1.1); }
+        }
+
+        #qte-timer {
+            width: 300px;
+            height: 10px;
+            background: #333;
+            margin-top: 30px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        #qte-timer-fill {
+            height: 100%;
+            background: #4ecdc4;
+            transition: width 0.1s linear;
+        }
+
+        /* Game Over / Endings */
+        #ending-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 500;
+        }
+
+        #ending-screen h2 {
+            font-size: 3rem;
+            color: #e94560;
+            margin-bottom: 20px;
+        }
+
+        #ending-screen p {
+            max-width: 500px;
+            text-align: center;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        /* Inventory popup */
+        #inventory-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #e94560;
+            border-radius: 10px;
+            padding: 30px;
+            display: none;
+            z-index: 350;
+            min-width: 300px;
+        }
+
+        #inventory-popup h3 {
+            color: #e94560;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .inventory-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        #close-inventory {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        /* Notes popup */
+        #notes-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #e94560;
+            border-radius: 10px;
+            padding: 30px;
+            display: none;
+            z-index: 350;
+            min-width: 300px;
+        }
+
+        #notes-popup h3 {
+            color: #e94560;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .notes-item {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        #close-notes {
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <!-- Title Screen -->
+        <div id="title-screen">
+            <h1>PhantomThrill</h1>
+            <p>A Phantom Thief Visual Novel</p>
+            <button class="menu-btn" id="continue-btn" onclick="continueGame()" style="display: none;">Continue</button>
+            <button class="menu-btn" onclick="startNewGame()">New Game</button>
+            <button class="menu-btn" onclick="showCredits()">Credits</button>
+        </div>
+
+        <!-- Credits Screen -->
+        <div id="credits-screen">
+            <h1>PhantomThrill</h1>
+            <p>A Visual Novel RPG</p>
+            <div class="credits-list">
+                <div class="credit-item">
+                    <span class="credit-role">Game Designer</span>
+                    <span class="credit-name">Celia Kok</span>
+                </div>
+                <div class="credit-item">
+                    <span class="credit-role">Prompter</span>
+                    <span class="credit-name">Robin Langer</span>
+                </div>
+                <div class="credit-item">
+                    <span class="credit-role">Software Engineer</span>
+                    <span class="credit-name">Claude Code</span>
+                </div>
+            </div>
+            <p class="credits-inspired">Inspired by: Miami Nights 2, Persona, Ace Attorney</p>
+            <button class="menu-btn" onclick="hideCredits()">Back</button>
+        </div>
+
+        <!-- Character Creation -->
+        <div id="character-creation">
+            <h2>Create Your Phantom</h2>
+            <div class="creation-panel">
+                <div class="preview-box">
+                    <div class="character-preview" id="char-preview"></div>
+                </div>
+                <div class="options-box">
+                    <div class="option-row">
+                        <label>Name:</label>
+                        <input type="text" id="char-name" value="Alex" maxlength="12">
+                    </div>
+                    <div class="option-row">
+                        <label>Thief Name:</label>
+                        <input type="text" id="thief-name" value="Thrill" maxlength="12">
+                    </div>
+                    <div class="option-row">
+                        <label>Gender:</label>
+                        <select id="char-gender" onchange="updatePreview()">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="option-row">
+                        <label>Skin Tone:</label>
+                        <div class="color-options" id="skin-options">
+                            <button class="color-btn selected" style="background: #ffdbac" onclick="selectSkin(this, '#ffdbac')"></button>
+                            <button class="color-btn" style="background: #f1c27d" onclick="selectSkin(this, '#f1c27d')"></button>
+                            <button class="color-btn" style="background: #e0ac69" onclick="selectSkin(this, '#e0ac69')"></button>
+                            <button class="color-btn" style="background: #c68642" onclick="selectSkin(this, '#c68642')"></button>
+                            <button class="color-btn" style="background: #8d5524" onclick="selectSkin(this, '#8d5524')"></button>
+                        </div>
+                    </div>
+                    <div class="option-row">
+                        <label>Hair Color:</label>
+                        <div class="color-options" id="hair-options">
+                            <button class="color-btn selected" style="background: #1a1a1a" onclick="selectHair(this, '#1a1a1a')"></button>
+                            <button class="color-btn" style="background: #4a3728" onclick="selectHair(this, '#4a3728')"></button>
+                            <button class="color-btn" style="background: #8b4513" onclick="selectHair(this, '#8b4513')"></button>
+                            <button class="color-btn" style="background: #d4a574" onclick="selectHair(this, '#d4a574')"></button>
+                            <button class="color-btn" style="background: #e94560" onclick="selectHair(this, '#e94560')"></button>
+                        </div>
+                    </div>
+                    <div class="option-row">
+                        <label>Shirt Color:</label>
+                        <div class="color-options" id="shirt-options">
+                            <button class="color-btn selected" style="background: #e94560" onclick="selectShirt(this, '#e94560')"></button>
+                            <button class="color-btn" style="background: #4ecdc4" onclick="selectShirt(this, '#4ecdc4')"></button>
+                            <button class="color-btn" style="background: #95e1a3" onclick="selectShirt(this, '#95e1a3')"></button>
+                            <button class="color-btn" style="background: #ffd93d" onclick="selectShirt(this, '#ffd93d')"></button>
+                            <button class="color-btn" style="background: #6c5ce7" onclick="selectShirt(this, '#6c5ce7')"></button>
+                        </div>
+                    </div>
+                    <button class="menu-btn" onclick="confirmCharacter()" style="margin-top: 20px;">Begin Story</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <div id="game-area">
+            <!-- Main Content (map + dialogue) -->
+            <div id="main-content">
+                <!-- Location Navigation -->
+                <div id="location-nav">
+                    <div class="location" id="loc-motel">
+                        <div class="location-icon">🏨</div>
+                        <div class="location-name">Motel</div>
+                    </div>
+                    <div class="location" id="loc-clinic">
+                        <div class="location-icon">🏥</div>
+                        <div class="location-name">Clinic</div>
+                    </div>
+                    <div class="location" id="loc-grocery">
+                        <div class="location-icon">🛒</div>
+                        <div class="location-name">Grocery</div>
+                    </div>
+                    <div class="location" id="loc-gym">
+                        <div class="location-icon">💪</div>
+                        <div class="location-name">Gym</div>
+                    </div>
+                    <div class="location" id="loc-mall">
+                        <div class="location-icon">🏬</div>
+                        <div class="location-name">Mall</div>
+                    </div>
+                    <div class="location" id="loc-restaurant">
+                        <div class="location-icon">🍽️</div>
+                        <div class="location-name">Restaurant</div>
+                    </div>
+                    <div class="location" id="loc-jazzbar">
+                        <div class="location-icon">🎷</div>
+                        <div class="location-name">Jazz Bar</div>
+                    </div>
+                    <div class="location" id="loc-museum">
+                        <div class="location-icon">🏛️</div>
+                        <div class="location-name">Museum</div>
+                    </div>
+                    <div class="location" id="loc-police">
+                        <div class="location-icon">🚔</div>
+                        <div class="location-name">Police</div>
+                    </div>
+                    <div class="location locked" id="loc-school">
+                        <div class="location-icon">🏫</div>
+                        <div class="location-name">School</div>
+                    </div>
+                    <div class="location locked" id="loc-bank">
+                        <div class="location-icon">🏦</div>
+                        <div class="location-name">Bank</div>
+                    </div>
+                    <div class="location locked" id="loc-underground">
+                        <div class="location-icon">🕳️</div>
+                        <div class="location-name">Underground</div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div id="map-container">
+                    <div id="game-scene">
+                        <p style="color: #666; text-align: center; padding-top: 50px; font-size: 1.2rem;">
+                            🎭 Select a location above to explore the city
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dialogue Box - Bottom Bar -->
+                <div id="dialogue-box">
+                    <div id="dialogue-inner">
+                        <div id="dialogue-left">
+                            <div id="speaker-name">???</div>
+                            <div id="dialogue-text"></div>
+                        </div>
+                        <div id="dialogue-right">
+                            <div id="dialogue-choices"></div>
+                            <div id="dialogue-continue">Click to continue...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar (Stats + Phone) -->
+            <div id="sidebar">
+                <div id="stats-panel">
+                    <div class="stat-row stat-money">
+                        <span class="stat-name">💰 Money</span>
+                        <span id="money-value">$50</span>
+                    </div>
+                    <div class="stat-row stat-hunger">
+                        <span class="stat-name">🍔 Hunger</span>
+                        <div class="stat-bar"><div class="stat-fill" id="hunger-bar" style="width: 70%"></div></div>
+                    </div>
+                    <div class="stat-row stat-hygiene">
+                        <span class="stat-name">🚿 Hygiene</span>
+                        <div class="stat-bar"><div class="stat-fill" id="hygiene-bar" style="width: 80%"></div></div>
+                    </div>
+                    <div class="stat-row stat-health">
+                        <span class="stat-name">❤️ Health</span>
+                        <div class="stat-bar"><div class="stat-fill" id="health-bar" style="width: 90%"></div></div>
+                    </div>
+                    <div class="stat-row stat-charisma">
+                        <span class="stat-name">✨ Charisma</span>
+                        <div class="stat-bar"><div class="stat-fill" id="charisma-bar" style="width: 40%"></div></div>
+                    </div>
+                    <div class="stat-row stat-fitness">
+                        <span class="stat-name">🏃 Fitness</span>
+                        <div class="stat-bar"><div class="stat-fill" id="fitness-bar" style="width: 30%"></div></div>
+                    </div>
+                    <div class="stat-row stat-knowledge">
+                        <span class="stat-name">📚 Knowledge</span>
+                        <div class="stat-bar"><div class="stat-fill" id="knowledge-bar" style="width: 50%"></div></div>
+                    </div>
+                    <div class="stat-row stat-criminality">
+                        <span class="stat-name">🎭 Criminality</span>
+                        <div class="stat-bar"><div class="stat-fill" id="criminality-bar" style="width: 10%"></div></div>
+                    </div>
+                </div>
+                <div id="phone-ui">
+                    <div id="phone-header">
+                        📱 <span id="game-time">Day 1 - Morning</span>
+                    </div>
+                    <div id="phone-content">
+                        <div class="notification" id="current-objective">
+                            Welcome to the city! You need to find a job and a place to stay.
+                        </div>
+                    </div>
+                    <div id="phone-actions">
+                        <button class="phone-btn" onclick="showInventory()">📦 Items</button>
+                        <button class="phone-btn" onclick="showNotes()">📝 Notes</button>
+                        <button class="phone-btn" onclick="advanceTime()">⏰ Rest</button>
+                        <button class="phone-btn" onclick="startAgain()" style="background: #e94560; color: white;">🔄 Start Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Scene -->
+        <div id="location-scene">
+            <button id="leave-location-btn" onclick="leaveLocation()">← Back to Map</button>
+            <div id="scene-title"></div>
+            <div id="scene-background"></div>
+            <div id="scene-actions"></div>
+            <div id="scene-notification"></div>
+        </div>
+
+        <!-- Heist Mode -->
+        <div id="heist-mode">
+            <div id="heist-header">
+                🎭 HEIST MODE
+                <div id="heist-phase">Phase: Infiltration</div>
+            </div>
+            <div id="heist-content">
+                <div id="heist-scene-icon">🏛️</div>
+                <div id="heist-description"></div>
+                <div id="heist-options"></div>
+            </div>
+        </div>
+
+        <!-- QTE Container -->
+        <div id="qte-container">
+            <div id="qte-prompt">QUICK! Press the key!</div>
+            <div id="qte-key">E</div>
+            <div id="qte-timer"><div id="qte-timer-fill" style="width: 100%"></div></div>
+        </div>
+
+        <!-- Ending Screen -->
+        <div id="ending-screen">
+            <h2 id="ending-title">GAME OVER</h2>
+            <p id="ending-text"></p>
+            <button class="menu-btn" onclick="location.reload()">Try Again</button>
+        </div>
+
+        <!-- Inventory Popup -->
+        <div id="inventory-popup">
+            <h3>Inventory</h3>
+            <div id="inventory-items"></div>
+            <button class="menu-btn" id="close-inventory" onclick="closeInventory()">Close</button>
+        </div>
+
+        <!-- Notes Popup -->
+        <div id="notes-popup">
+            <h3>Intel Notes</h3>
+            <div id="notes-items"></div>
+            <button class="menu-btn" id="close-notes" onclick="closeNotes()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // === GAME_DATA_START ===
+        const GAME_DATA = {
+        "meta": {
+                "title": "PhantomThrill",
+                "subtitle": "A Phantom Thief Visual Novel",
+                "credits": {
+                        "gameDesigner": "Celia Kok",
+                        "prompter": "Robin Langer",
+                        "softwareEngineer": "Claude Code"
+                },
+                "inspiredBy": [
+                        "Miami Nights 2",
+                        "Persona",
+                        "Ace Attorney"
+                ]
+        },
+        "initialState": {
+                "player": {
+                        "name": "Alex",
+                        "thiefName": "Thrill",
+                        "gender": "male",
+                        "skinTone": "#ffdbac",
+                        "hairColor": "#1a1a1a",
+                        "shirtColor": "#e94560"
+                },
+                "stats": {
+                        "money": 50,
+                        "hunger": 70,
+                        "hygiene": 80,
+                        "health": 90,
+                        "charisma": 40,
+                        "fitness": 30,
+                        "knowledge": 50,
+                        "criminality": 10
+                },
+                "day": 1,
+                "timeOfDay": "Morning",
+                "currentLocation": "motel",
+                "chapter": 1,
+                "storyProgress": 0,
+                "inventory": [],
+                "notes": [],
+                "flags": {
+                        "metCal": false,
+                        "foundUnderground": false,
+                        "acceptedHeist": false,
+                        "completedMuseumHeist": false,
+                        "metInspector": false,
+                        "gotJadeWhipInfo": false,
+                        "visitedGrocery": false,
+                        "visitedMall": false,
+                        "visitedRestaurant": false,
+                        "visitedGym": false,
+                        "visitedBar": false,
+                        "visitedPolice": false,
+                        "visitedMotel": false
+                },
+                "heist": {
+                        "phase": "none",
+                        "intel": [],
+                        "suspicion": 0
+                }
+        },
+        "locations": {
+                "motel": {
+                        "name": "Rundown Motel",
+                        "icon": "\ud83c\udfe8",
+                        "description": "Your temporary home. Cheap but functional.",
+                        "actions": [
+                                "Sleep",
+                                "Shower",
+                                "Check belongings"
+                        ],
+                        "locked": false
+                },
+                "clinic": {
+                        "name": "Outskirts Clinic",
+                        "icon": "\ud83c\udfe5",
+                        "description": "A small clinic on the outskirts of the city.",
+                        "actions": [
+                                "Get checkup",
+                                "Buy medicine",
+                                "Talk to receptionist"
+                        ],
+                        "locked": false
+                },
+                "underground": {
+                        "name": "Underground Market",
+                        "icon": "\ud83d\udd73\ufe0f",
+                        "description": "A hidden market where anything can be found... for a price.",
+                        "actions": [
+                                "Browse goods",
+                                "Talk to dealer",
+                                "Check job board"
+                        ],
+                        "locked": true,
+                        "unlockFlag": "found_underground"
+                },
+                "grocery": {
+                        "name": "Grocery Store",
+                        "icon": "\ud83d\uded2",
+                        "description": "A modest grocery store in the suburbs.",
+                        "actions": [
+                                "Buy food",
+                                "Check job listings",
+                                "Talk to cashier"
+                        ],
+                        "locked": false
+                },
+                "mall": {
+                        "name": "City Mall",
+                        "icon": "\ud83c\udfec",
+                        "description": "A bustling shopping center in the city.",
+                        "actions": [
+                                "Shop for clothes",
+                                "Visit arcade",
+                                "Visit bookstore"
+                        ],
+                        "locked": false
+                },
+                "restaurant": {
+                        "name": "Fine Dining",
+                        "icon": "\ud83c\udf7d\ufe0f",
+                        "description": "An upscale restaurant. Expensive but classy.",
+                        "actions": [
+                                "Eat meal",
+                                "Apply for job"
+                        ],
+                        "locked": false
+                },
+                "gym": {
+                        "name": "Fitness Center",
+                        "icon": "\ud83c\udfcb\ufe0f",
+                        "description": "A well-equipped gym. Membership has its benefits.",
+                        "actions": [
+                                "Work out",
+                                "Check job listings"
+                        ],
+                        "locked": false
+                },
+                "bar": {
+                        "name": "Night Bar",
+                        "icon": "\ud83c\udf78",
+                        "description": "A dimly lit bar. Good for gathering information.",
+                        "actions": [
+                                "Order drink",
+                                "Talk to bartender"
+                        ],
+                        "locked": false
+                },
+                "museum": {
+                        "name": "City Museum",
+                        "icon": "\ud83c\udfdb\ufe0f",
+                        "description": "The grand City Museum. Home of the Jade Whip.",
+                        "actions": [
+                                "Admire exhibits",
+                                "Study layout",
+                                "Talk to guard"
+                        ],
+                        "locked": false
+                },
+                "police": {
+                        "name": "Police Station",
+                        "icon": "\ud83d\ude94",
+                        "description": "Better stay on your best behavior here.",
+                        "actions": [
+                                "Check wanted posters"
+                        ],
+                        "locked": false
+                },
+                "school": {
+                        "name": "Elite Academy",
+                        "icon": "\ud83c\udf93",
+                        "description": "An elite school. Chapter 2 content.",
+                        "actions": [
+                                "Look around",
+                                "Check job listings"
+                        ],
+                        "locked": true
+                },
+                "bank": {
+                        "name": "Central Bank",
+                        "icon": "\ud83c\udfe6",
+                        "description": "Fort Knox has nothing on this place. Chapter 5 content.",
+                        "actions": [
+                                "Check account",
+                                "Observe security"
+                        ],
+                        "locked": true
+                }
+        },
+        "actions": {
+                "Sleep": {
+                        "effects": {
+                                "health": 20,
+                                "hunger": -10
+                        },
+                        "advanceTime": true,
+                        "message": "You feel rested. +20 Health, -10 Hunger"
+                },
+                "Shower": {
+                        "effects": {
+                                "hygiene": "full"
+                        },
+                        "message": "Fresh and clean! Hygiene restored."
+                },
+                "Buy food": {
+                        "cost": 10,
+                        "effects": {
+                                "hunger": 30
+                        },
+                        "message": "Bought groceries. -$10, +30 Hunger"
+                },
+                "Work out": {
+                        "cost": 5,
+                        "effects": {
+                                "fitness": 10,
+                                "hunger": -15
+                        },
+                        "message": "Good workout! -$5, +10 Fitness, -15 Hunger"
+                },
+                "Visit bookstore": {
+                        "cost": 15,
+                        "effects": {
+                                "knowledge": 15
+                        },
+                        "message": "Bought some books. -$15, +15 Knowledge"
+                },
+                "Eat meal": {
+                        "cost": 20,
+                        "effects": {
+                                "hunger": "full",
+                                "charisma": 5
+                        },
+                        "message": "Delicious meal! -$20, Full Hunger, +5 Charisma"
+                },
+                "Order drink": {
+                        "cost": 10,
+                        "effects": {
+                                "charisma": 10
+                        },
+                        "message": "The bartender shares some rumors. -$10, +10 Charisma"
+                },
+                "Study layout": {
+                        "effects": {
+                                "knowledge": 5
+                        },
+                        "addIntel": "Guard rotation: Every 15 minutes",
+                        "message": "You memorize the museum layout. +5 Knowledge"
+                },
+                "Talk to guard": {
+                        "effects": {
+                                "charisma": 5
+                        },
+                        "addIntel": "Security system: Laser grid at night",
+                        "message": "You chat with a guard and learn about the security. +5 Charisma"
+                },
+                "Browse goods": {
+                        "cost": 15,
+                        "effects": {
+                                "criminality": 15
+                        },
+                        "message": "You buy some... questionable tools. -$15, +15 Criminality"
+                },
+                "Talk to dealer": {
+                        "effects": {
+                                "criminality": 5,
+                                "knowledge": 5
+                        },
+                        "message": "The dealer shares underworld secrets. +5 Criminality, +5 Knowledge"
+                },
+                "Check belongings": {
+                        "effects": {},
+                        "message": "A worn suitcase, some spare clothes, and memories of better days."
+                },
+                "Get checkup": {
+                        "effects": {},
+                        "message": "The doctor checks your vitals. \"You're fine. Just stressed. Get some rest.\""
+                },
+                "Buy medicine": {
+                        "effects": {},
+                        "message": "You browse the shelves. Aspirin, bandages, antacids. Nothing you need right now."
+                },
+                "Check job listings": {
+                        "effects": {},
+                        "message": "\"Now Hiring: Minimum wage, maximum effort.\" The usual dead ends."
+                },
+                "Talk to cashier": {
+                        "effects": {},
+                        "message": "\"Paper or plastic?\" The cashier barely looks up from their phone."
+                },
+                "Shop for clothes": {
+                        "effects": {},
+                        "message": "You window shop. Nice things for people with nice incomes."
+                },
+                "Visit arcade": {
+                        "effects": {},
+                        "message": "Flashing lights, electronic beeps. You watch a kid set a high score."
+                },
+                "Apply for job": {
+                        "effects": {},
+                        "message": "\"We'll call you.\" The manager's smile doesn't reach their eyes."
+                },
+                "Talk to bartender": {
+                        "effects": {},
+                        "message": "The bartender wipes a glass. \"Rough day?\" You nod. They understand."
+                },
+                "Admire exhibits": {
+                        "effects": {},
+                        "message": "Ancient pottery, faded paintings, dusty artifacts. History under glass."
+                },
+                "Check wanted posters": {
+                        "effects": {},
+                        "message": "Small-time crooks and petty thieves stare back at you from faded posters.",
+                        "messageAfterHeist": "You see a sketch that looks vaguely like you... unsettling."
+                },
+                "Check job board": {
+                        "effects": {},
+                        "message": "Coded messages, cryptic symbols. Jobs for people with... flexible morals."
+                }
+        },
+        "dialogues": {
+                "intro": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "Another rejection letter. Another door closed."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "You stare at the cracked ceiling of your motel room, the weight of failure pressing down."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Three months since graduation. Dozens of applications. Zero offers."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) My savings are running out. I need to find something... anything."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Your phone buzzes. A notification from a job hunting app: \"0 new matches.\""
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "...Great."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Perhaps exploring the city might turn up some opportunities. Or at least, a distraction."
+                        }
+                ],
+                "clinicMeetCal": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "You enter the small clinic. The fluorescent lights flicker overhead."
+                        },
+                        {
+                                "speaker": "???",
+                                "text": "Welcome! First time here?"
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A cheerful receptionist waves at you from behind the counter."
+                        },
+                        {
+                                "speaker": "Cal",
+                                "text": "I'm Cal. What brings you to our little clinic?"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "Just... looking for some medicine. Headaches.",
+                                "choices": [
+                                        {
+                                                "text": "Ask about job openings",
+                                                "effect": {
+                                                        "charisma": 5
+                                                }
+                                        },
+                                        {
+                                                "text": "Ask about the area",
+                                                "effect": {
+                                                        "flag": "found_underground"
+                                                }
+                                        },
+                                        {
+                                                "text": "Just get the medicine",
+                                                "effect": {}
+                                        }
+                                ]
+                        },
+                        {
+                                "speaker": "Cal",
+                                "text": "You look like you've had a rough time. New to the city?"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "Yeah. Still trying to find my footing."
+                        },
+                        {
+                                "speaker": "Cal",
+                                "text": "The city can be tough. But there are... opportunities, if you know where to look."
+                        },
+                        {
+                                "speaker": "Cal",
+                                "text": "There's a basement entrance behind this building. If you're desperate enough."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Cal's eyes hold a knowing glint. What kind of opportunities?"
+                        }
+                ],
+                "undergroundFirst": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "You descend into the underground market. The air is thick with secrets."
+                        },
+                        {
+                                "speaker": "???",
+                                "text": "Fresh meat, huh?"
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A figure emerges from the shadows, their face obscured."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "Looking for work? The kind that pays... generously?"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "What kind of work?"
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "The Phantom Thief Association is always looking for talent."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "There's a job coming up. The City Museum. The Jade Whip."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "Worth millions. And you'd get a cut. Interested?"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "...",
+                                "choices": [
+                                        {
+                                                "text": "Tell me more.",
+                                                "effect": {
+                                                        "flag": "accepted_heist",
+                                                        "criminality": 10
+                                                }
+                                        },
+                                        {
+                                                "text": "This is crazy. I'm leaving.",
+                                                "effect": {
+                                                        "ending": "rejected"
+                                                }
+                                        }
+                                ]
+                        }
+                ],
+                "acceptHeist": [
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "Smart choice. Here's what you need to know."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "The Jade Whip is in the east wing of the museum. Heavy security."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "You'll need to scout the place first. Learn the guard rotations."
+                        },
+                        {
+                                "speaker": "Shadowy Figure",
+                                "text": "When you're ready, come back here. We'll set a date."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "You receive a burner phone and a basic disguise kit."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Your journey as a phantom thief begins..."
+                        }
+                ],
+                "museumScout": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "The City Museum stands before you, grand and imposing."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Security guards patrol the entrance. Cameras dot every corner."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) I need to learn the layout without raising suspicion."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "You spot the Jade Whip in a display case in the east wing."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "It gleams under the spotlights, practically begging to be taken."
+                        }
+                ],
+                "inspectorMeet": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "As you study the security, someone approaches."
+                        },
+                        {
+                                "speaker": "???",
+                                "text": "Fascinating piece, isn't it? The Jade Whip."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A sharp-eyed individual in a trenchcoat stands beside you."
+                        },
+                        {
+                                "speaker": "Inspector Mori",
+                                "text": "I'm Inspector Mori. Phantom Thief Task Force."
+                        },
+                        {
+                                "speaker": "Inspector Mori",
+                                "text": "We've been getting reports of suspicious activity around the museum."
+                        },
+                        {
+                                "speaker": "Inspector Mori",
+                                "text": "You wouldn't happen to know anything about that, would you?"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "...",
+                                "choices": [
+                                        {
+                                                "text": "Play dumb. \"Just admiring the art.\"",
+                                                "effect": {
+                                                        "charisma": 5
+                                                }
+                                        },
+                                        {
+                                                "text": "Stay calm. \"First time visiting.\"",
+                                                "effect": {
+                                                        "knowledge": 5
+                                                }
+                                        },
+                                        {
+                                                "text": "Get nervous. \"I-I should go...\"",
+                                                "effect": {
+                                                        "criminality": 15,
+                                                        "suspicion": 20
+                                                }
+                                        }
+                                ]
+                        },
+                        {
+                                "speaker": "Inspector Mori",
+                                "text": "Hmm. Well, enjoy your visit. And remember..."
+                        },
+                        {
+                                "speaker": "Inspector Mori",
+                                "text": "Crime never pays. Not in my city."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "The Inspector walks away, but you feel their eyes on your back."
+                        }
+                ],
+                "groceryVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "The fluorescent lights buzz overhead. A bored cashier scrolls through their phone."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Just a regular grocery store. Nothing special here."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A job listing board catches your eye near the exit. 'Now Hiring - Flexible Hours'"
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Honest work... but would it ever be enough?"
+                        }
+                ],
+                "mallVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "The city mall buzzes with activity. Shoppers drift between stores, bags in hand."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Everyone here has money to spend. Must be nice."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "You pass by designer boutiques, their price tags making you wince."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) The arcade might be fun. Or I could pick up a book..."
+                        }
+                ],
+                "restaurantVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "Crystal chandeliers. White tablecloths. The clink of expensive silverware."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) This place screams money. Way out of my league."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A waiter glances at your clothes with barely concealed disdain."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Maybe someday I'll walk in here like I own the place."
+                        }
+                ],
+                "gymVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "The smell of sweat and determination fills the air."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Getting stronger couldn't hurt. You never know when you'll need to run."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "Muscular regulars eye you as you walk past the equipment."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Everyone starts somewhere, right?"
+                        }
+                ],
+                "barVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "Dim lights. Jazz playing softly. The clink of glasses."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) This place has atmosphere. People come here to talk... and to listen."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "The bartender polishes a glass, watching the room with knowing eyes."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Bars are where secrets are traded. Could be useful."
+                        }
+                ],
+                "policeVisit": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "The police station looms before you. Officers bustle about with purpose."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) Why am I here? This feels like a bad idea."
+                        },
+                        {
+                                "speaker": "Narrator",
+                                "text": "A wanted poster board catches your attention. Petty thieves, mostly."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) I should probably leave before someone gets suspicious."
+                        }
+                ],
+                "motelReturn": [
+                        {
+                                "speaker": "Narrator",
+                                "text": "Back to your temporary home. The familiar creak of the door greets you."
+                        },
+                        {
+                                "speaker": "{player_name}",
+                                "text": "(Thinking) It's not much, but it's all I've got right now."
+                        }
+                ]
+        },
+        "heistSequences": {
+                "museum": {
+                        "infiltration": [
+                                {
+                                        "scene": "entrance",
+                                        "icon": "\ud83d\udeaa",
+                                        "description": "You stand before the museum's service entrance. The heist begins now.",
+                                        "options": [
+                                                {
+                                                        "text": "Pick the lock",
+                                                        "stat": "criminality",
+                                                        "req": 30,
+                                                        "success": "lockpick"
+                                                },
+                                                {
+                                                        "text": "Bluff the guard",
+                                                        "stat": "charisma",
+                                                        "req": 50,
+                                                        "success": "bluff"
+                                                },
+                                                {
+                                                        "text": "Find another way",
+                                                        "stat": "knowledge",
+                                                        "req": 40,
+                                                        "success": "alternate"
+                                                }
+                                        ]
+                                },
+                                {
+                                        "scene": "hallway",
+                                        "icon": "\ud83c\udfc3",
+                                        "description": "You're inside. Security cameras sweep the hallway ahead.",
+                                        "options": [
+                                                {
+                                                        "text": "Time the cameras and dash",
+                                                        "stat": "fitness",
+                                                        "req": 40,
+                                                        "success": "dash"
+                                                },
+                                                {
+                                                        "text": "Disable the camera system",
+                                                        "stat": "knowledge",
+                                                        "req": 60,
+                                                        "success": "disable"
+                                                },
+                                                {
+                                                        "text": "Create a distraction",
+                                                        "stat": "charisma",
+                                                        "req": 40,
+                                                        "success": "distract"
+                                                }
+                                        ]
+                                }
+                        ],
+                        "callingCard": [
+                                {
+                                        "scene": "exhibit",
+                                        "icon": "\ud83d\udc8e",
+                                        "description": "The Jade Whip gleams before you. Laser sensors crisscross the display.",
+                                        "options": [
+                                                {
+                                                        "text": "Acrobatic maneuvers",
+                                                        "stat": "fitness",
+                                                        "req": 50,
+                                                        "success": "acrobat"
+                                                },
+                                                {
+                                                        "text": "Mirror trick",
+                                                        "stat": "knowledge",
+                                                        "req": 50,
+                                                        "success": "mirror"
+                                                },
+                                                {
+                                                        "text": "Distract the guard",
+                                                        "stat": "charisma",
+                                                        "req": 55,
+                                                        "success": "charm_guard"
+                                                },
+                                                {
+                                                        "text": "Smoke bomb",
+                                                        "stat": "criminality",
+                                                        "req": 40,
+                                                        "success": "smoke"
+                                                }
+                                        ]
+                                }
+                        ],
+                        "escape": [
+                                {
+                                        "scene": "getaway",
+                                        "icon": "\ud83c\udfc3\u200d\u2642\ufe0f",
+                                        "description": "Alarms blare! Guards are converging on your position!",
+                                        "options": [
+                                                {
+                                                        "text": "Sprint to the exit",
+                                                        "stat": "fitness",
+                                                        "req": 60,
+                                                        "success": "sprint"
+                                                },
+                                                {
+                                                        "text": "Blend with the crowd",
+                                                        "stat": "charisma",
+                                                        "req": 60,
+                                                        "success": "blend"
+                                                },
+                                                {
+                                                        "text": "Use the secret passage",
+                                                        "stat": "knowledge",
+                                                        "req": 70,
+                                                        "success": "secret"
+                                                }
+                                        ]
+                                },
+                                {
+                                        "scene": "confrontation",
+                                        "icon": "\ud83d\ude94",
+                                        "description": "Inspector Mori blocks your path! \"End of the line, thief!\"",
+                                        "options": [
+                                                {
+                                                        "text": "Outwit them with words",
+                                                        "stat": "charisma",
+                                                        "req": 70,
+                                                        "success": "outwit"
+                                                },
+                                                {
+                                                        "text": "Make a daring escape",
+                                                        "stat": "fitness",
+                                                        "req": 70,
+                                                        "success": "daring"
+                                                },
+                                                {
+                                                        "text": "Trigger prepared distraction",
+                                                        "stat": "knowledge",
+                                                        "req": 70,
+                                                        "success": "distract_mori"
+                                                },
+                                                {
+                                                        "text": "Reveal your calling card",
+                                                        "stat": "criminality",
+                                                        "req": 50,
+                                                        "success": "card",
+                                                        "qte": true
+                                                }
+                                        ]
+                                }
+                        ]
+                }
+        },
+        "endings": {
+                "rejected": {
+                        "title": "The Safe Path",
+                        "text": "You walked away from the underground. Perhaps a normal life awaits... but this isn't that story."
+                },
+                "caught": {
+                        "title": "Busted!",
+                        "text": "Inspector Mori caught you! \"I knew you were suspicious from the start.\""
+                },
+                "starvation": {
+                        "title": "Starved",
+                        "text": "You collapsed from hunger. The phantom thief dream ends here..."
+                },
+                "health": {
+                        "title": "Exhausted",
+                        "text": "Your health gave out. Take better care of yourself next time..."
+                },
+                "chapter1Complete": {
+                        "title": "Chapter 1 Complete!",
+                        "text": "Congratulations! You completed Chapter 1.\n\nThe Jade Whip is yours, and Inspector Mori is on your trail.\n\nMore chapters coming soon..."
+                }
+        },
+        "objectives": {
+                "start": "Explore the city. Find a job or... other opportunities.",
+                "foundUnderground": "You learned about the underground market behind the clinic...",
+                "acceptedHeist": "Scout the City Museum. Learn its layout and security.",
+                "metInspector": "Return to the underground market when ready for the heist."
+        }
+};
+        // === GAME_DATA_END ===
+
+        // Game State - initialized from GAME_DATA
+        const gameState = JSON.parse(JSON.stringify(GAME_DATA.initialState));
+
+        // Save/Load functions
+        function saveGame() {
+            const saveData = JSON.stringify(gameState);
+            localStorage.setItem('phantomThrill_save', saveData);
+        }
+
+        function loadGame() {
+            const saveData = localStorage.getItem('phantomThrill_save');
+            if (saveData) {
+                const loaded = JSON.parse(saveData);
+                Object.assign(gameState.player, loaded.player);
+                Object.assign(gameState.stats, loaded.stats);
+                Object.assign(gameState.flags, loaded.flags);
+                Object.assign(gameState.heist, loaded.heist);
+                gameState.day = loaded.day;
+                gameState.timeOfDay = loaded.timeOfDay;
+                gameState.currentLocation = loaded.currentLocation;
+                gameState.chapter = loaded.chapter;
+                gameState.storyProgress = loaded.storyProgress;
+                gameState.inventory = loaded.inventory || [];
+                gameState.notes = loaded.notes || [];
+                return true;
+            }
+            return false;
+        }
+
+        function hasSaveGame() {
+            return localStorage.getItem('phantomThrill_save') !== null;
+        }
+
+        function deleteSaveGame() {
+            localStorage.removeItem('phantomThrill_save');
+        }
+
+        function startAgain() {
+            if (confirm('Are you sure you want to start over? All progress will be lost.')) {
+                deleteSaveGame();
+                location.reload();
+            }
+        }
+
+        function continueGame() {
+            if (loadGame()) {
+                document.getElementById('title-screen').style.display = 'none';
+                document.getElementById('game-area').classList.add('active');
+                document.getElementById('sidebar').classList.add('active');
+
+                // Restore location locks based on flags
+                if (gameState.flags.foundUnderground) {
+                    locations.underground.locked = false;
+                }
+
+                updateStats();
+                updatePlayerPosition(gameState.currentLocation);
+                updateLockedStatus();
+                document.getElementById('game-time').textContent = 'Day ' + gameState.day + ' - ' + gameState.timeOfDay;
+                showLocationScene(gameState.currentLocation);
+            }
+        }
+
+        // Location data
+        const locations = {
+            motel: {
+                name: 'Rundown Motel',
+                icon: '🏨',
+                actions: ['Sleep', 'Shower', 'Check belongings'],
+                description: 'Your temporary home. Cheap but functional.'
+            },
+            clinic: {
+                name: 'Outskirts Clinic',
+                icon: '🏥',
+                actions: ['Get checkup', 'Buy medicine', 'Talk to receptionist'],
+                description: 'A small clinic on the outskirts of the city.'
+            },
+            underground: {
+                name: 'Underground Market',
+                icon: '🕳️',
+                actions: ['Browse goods', 'Talk to dealer', 'Check job board'],
+                description: 'A hidden market where anything can be found... for a price.',
+                locked: true
+            },
+            grocery: {
+                name: 'Grocery Store',
+                icon: '🛒',
+                actions: ['Buy food', 'Check job listings', 'Talk to cashier'],
+                description: 'A modest grocery store in the suburbs.'
+            },
+            mall: {
+                name: 'City Mall',
+                icon: '🏬',
+                actions: ['Shop for clothes', 'Visit arcade', 'Visit bookstore'],
+                description: 'A bustling shopping center in the city.'
+            },
+            restaurant: {
+                name: 'Fine Dining',
+                icon: '🍽️',
+                actions: ['Eat meal ($20)', 'Apply for job', 'Observe patrons'],
+                description: 'An upscale restaurant. Maybe you could work here?'
+            },
+            museum: {
+                name: 'City Museum',
+                icon: '🏛️',
+                actions: ['View exhibits', 'Study layout', 'Talk to guard'],
+                description: 'Home to priceless artifacts... including the legendary Jade Whip.'
+            },
+            jazzbar: {
+                name: 'Moonlight Jazz Bar',
+                icon: '🎷',
+                actions: ['Order drink ($10)', 'Talk to bartender', 'Listen to music'],
+                description: 'A smoky jazz bar where information flows as freely as the drinks.'
+            },
+            gym: {
+                name: 'City Gym',
+                icon: '💪',
+                actions: ['Work out ($5)', 'Use locker room', 'Check notice board'],
+                description: 'Stay fit, stay sharp.'
+            },
+            police: {
+                name: 'Police Station',
+                icon: '🚔',
+                actions: ['Report crime', 'Check wanted posters', 'Leave quickly'],
+                description: 'The long arm of the law. Best not to linger.'
+            },
+            school: {
+                name: 'Prestigious Academy',
+                icon: '🏫',
+                actions: ['Look around', 'Check job listings', 'Leave'],
+                description: 'An elite school. Chapter 2 content.',
+                locked: true
+            },
+            bank: {
+                name: 'Central Bank',
+                icon: '🏦',
+                actions: ['Check account', 'Observe security', 'Leave'],
+                description: 'Fort Knox has nothing on this place. Chapter 5 content.',
+                locked: true
+            }
+        };
+
+        // Dialogue sequences
+        const dialogues = {
+            intro: [
+                { speaker: 'Narrator', text: 'Another rejection letter. Another door closed.' },
+                { speaker: 'Narrator', text: 'You stare at the cracked ceiling of your motel room, the weight of failure pressing down.' },
+                { speaker: gameState.player.name, text: '(Thinking) Three months since graduation. Dozens of applications. Zero offers.' },
+                { speaker: gameState.player.name, text: '(Thinking) My savings are running out. I need to find something... anything.' },
+                { speaker: 'Narrator', text: 'Your phone buzzes. A notification from a job hunting app: "0 new matches."' },
+                { speaker: gameState.player.name, text: '...Great.' },
+                { speaker: 'Narrator', text: 'Perhaps exploring the city might turn up some opportunities. Or at least, a distraction.' }
+            ],
+            clinicMeetCal: [
+                { speaker: 'Narrator', text: 'You enter the small clinic. The fluorescent lights flicker overhead.' },
+                { speaker: '???', text: 'Welcome! First time here?' },
+                { speaker: 'Narrator', text: 'A cheerful receptionist waves at you from behind the counter.' },
+                { speaker: 'Cal', text: 'I\'m Cal. What brings you to our little clinic?' },
+                {
+                    speaker: gameState.player.name,
+                    text: 'Just... looking for some medicine. Headaches.',
+                    choices: [
+                        { text: 'Ask about job openings', effect: () => { gameState.stats.charisma += 5; } },
+                        { text: 'Ask about the area', effect: () => { gameState.flags.foundUnderground = true; } },
+                        { text: 'Just get the medicine', effect: () => {} }
+                    ]
+                },
+                { speaker: 'Cal', text: 'You look like you\'ve had a rough time. New to the city?' },
+                { speaker: gameState.player.name, text: 'Yeah. Still trying to find my footing.' },
+                { speaker: 'Cal', text: 'The city can be tough. But there are... opportunities, if you know where to look.' },
+                { speaker: 'Cal', text: 'There\'s a basement entrance behind this building. If you\'re desperate enough.' },
+                { speaker: 'Narrator', text: 'Cal\'s eyes hold a knowing glint. What kind of opportunities?' }
+            ],
+            undergroundFirst: [
+                { speaker: 'Narrator', text: 'You descend into the underground market. The air is thick with secrets.' },
+                { speaker: '???', text: 'Fresh meat, huh?' },
+                { speaker: 'Narrator', text: 'A figure emerges from the shadows, their face obscured.' },
+                { speaker: 'Shadowy Figure', text: 'Looking for work? The kind that pays... generously?' },
+                { speaker: gameState.player.name, text: 'What kind of work?' },
+                { speaker: 'Shadowy Figure', text: 'The Phantom Thief Association is always looking for talent.' },
+                { speaker: 'Shadowy Figure', text: 'There\'s a job coming up. The City Museum. The Jade Whip.' },
+                { speaker: 'Shadowy Figure', text: 'Worth millions. And you\'d get a cut. Interested?' },
+                {
+                    speaker: gameState.player.name,
+                    text: '...',
+                    choices: [
+                        { text: 'Tell me more.', effect: () => { gameState.flags.acceptedHeist = true; gameState.stats.criminality += 10; } },
+                        { text: 'This is crazy. I\'m leaving.', effect: () => { showEnding('rejected', 'You walked away from the underground. Perhaps a normal life awaits... but this isn\'t that story.'); } }
+                    ]
+                }
+            ],
+            acceptHeist: [
+                { speaker: 'Shadowy Figure', text: 'Smart choice. Here\'s what you need to know.' },
+                { speaker: 'Shadowy Figure', text: 'The Jade Whip is in the east wing of the museum. Heavy security.' },
+                { speaker: 'Shadowy Figure', text: 'You\'ll need to scout the place first. Learn the guard rotations.' },
+                { speaker: 'Shadowy Figure', text: 'When you\'re ready, come back here. We\'ll set a date.' },
+                { speaker: 'Narrator', text: 'You receive a burner phone and a basic disguise kit.' },
+                { speaker: 'Narrator', text: 'Your journey as a phantom thief begins...' }
+            ],
+            museumScout: [
+                { speaker: 'Narrator', text: 'The City Museum stands before you, grand and imposing.' },
+                { speaker: 'Narrator', text: 'Security guards patrol the entrance. Cameras dot every corner.' },
+                { speaker: gameState.player.name, text: '(Thinking) I need to learn the layout without raising suspicion.' },
+                { speaker: 'Narrator', text: 'You spot the Jade Whip in a display case in the east wing.' },
+                { speaker: 'Narrator', text: 'It gleams under the spotlights, practically begging to be taken.' }
+            ],
+            inspectorMeet: [
+                { speaker: 'Narrator', text: 'As you study the security, someone approaches.' },
+                { speaker: '???', text: 'Fascinating piece, isn\'t it? The Jade Whip.' },
+                { speaker: 'Narrator', text: 'A sharp-eyed individual in a trenchcoat stands beside you.' },
+                { speaker: 'Inspector Mori', text: 'I\'m Inspector Mori. Phantom Thief Task Force.' },
+                { speaker: 'Inspector Mori', text: 'We\'ve been getting reports of suspicious activity around the museum.' },
+                { speaker: 'Inspector Mori', text: 'You wouldn\'t happen to know anything about that, would you?' },
+                {
+                    speaker: gameState.player.name,
+                    text: '...',
+                    choices: [
+                        { text: 'Play dumb. "Just admiring the art."', effect: () => { gameState.stats.charisma += 5; } },
+                        { text: 'Stay calm. "First time visiting."', effect: () => { gameState.stats.knowledge += 5; } },
+                        { text: 'Get nervous. "I-I should go..."', effect: () => { gameState.stats.criminality += 15; gameState.heist.suspicion += 20; } }
+                    ]
+                },
+                { speaker: 'Inspector Mori', text: 'Hmm. Well, enjoy your visit. And remember...' },
+                { speaker: 'Inspector Mori', text: 'Crime never pays. Not in my city.' },
+                { speaker: 'Narrator', text: 'The Inspector walks away, but you feel their eyes on your back.' }
+            ]
+        };
+
+        // Heist sequences
+        const heistSequences = {
+            museum: {
+                infiltration: [
+                    {
+                        scene: 'entrance',
+                        icon: '🚪',
+                        description: 'You stand before the museum\'s service entrance. The heist begins now.',
+                        options: [
+                            { text: 'Pick the lock (Criminality 30+)', stat: 'criminality', req: 30, success: 'lockpick' },
+                            { text: 'Bluff the guard (Charisma 50+)', stat: 'charisma', req: 50, success: 'bluff' },
+                            { text: 'Find another way (Knowledge 40+)', stat: 'knowledge', req: 40, success: 'alternate' }
+                        ]
+                    },
+                    {
+                        scene: 'hallway',
+                        icon: '🏃',
+                        description: 'You\'re inside. Security cameras sweep the hallway ahead.',
+                        options: [
+                            { text: 'Time the cameras and dash (Fitness 40+)', stat: 'fitness', req: 40, success: 'dash' },
+                            { text: 'Disable the camera system (Knowledge 60+)', stat: 'knowledge', req: 60, success: 'disable' },
+                            { text: 'Create a distraction (Charisma 40+)', stat: 'charisma', req: 40, success: 'distract' }
+                        ]
+                    }
+                ],
+                callingCard: [
+                    {
+                        scene: 'exhibit',
+                        icon: '💎',
+                        description: 'The Jade Whip gleams before you. Laser sensors crisscross the display.',
+                        options: [
+                            { text: 'Acrobatic maneuvers (Fitness 50+)', stat: 'fitness', req: 50, success: 'acrobat' },
+                            { text: 'Mirror trick (Knowledge 50+)', stat: 'knowledge', req: 50, success: 'mirror' },
+                            { text: 'Smoke bomb (Criminality 40+)', stat: 'criminality', req: 40, success: 'smoke' }
+                        ]
+                    }
+                ],
+                escape: [
+                    {
+                        scene: 'getaway',
+                        icon: '🏃‍♂️',
+                        description: 'Alarms blare! Guards are converging on your position!',
+                        options: [
+                            { text: 'Sprint to the exit (Fitness 60+)', stat: 'fitness', req: 60, success: 'sprint' },
+                            { text: 'Blend with the crowd (Charisma 60+)', stat: 'charisma', req: 60, success: 'blend' },
+                            { text: 'Use the secret passage (Knowledge 70+)', stat: 'knowledge', req: 70, success: 'secret' }
+                        ]
+                    },
+                    {
+                        scene: 'confrontation',
+                        icon: '🚔',
+                        description: 'Inspector Mori blocks your path! "End of the line, thief!"',
+                        options: [
+                            { text: 'Outwit them with words (Charisma 70+)', stat: 'charisma', req: 70, success: 'outwit' },
+                            { text: 'Make a daring escape (Fitness 70+)', stat: 'fitness', req: 70, success: 'daring' },
+                            { text: 'Reveal your calling card (Criminality 50+)', stat: 'criminality', req: 50, success: 'card', qte: true }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // UI Functions
+        function updatePreview() {
+            const gender = document.getElementById('char-gender').value;
+            const skinTone = gameState.player.skinTone;
+            const hairColor = gameState.player.hairColor;
+            const shirtColor = gameState.player.shirtColor;
+
+            let hairClass = '';
+            if (gender === 'female') hairClass = 'female';
+
+            const hairStrands = gender === 'female' ? `
+                <div class="hair-strand left" style="background: ${hairColor}"></div>
+                <div class="hair-strand right" style="background: ${hairColor}"></div>
+            ` : '';
+
+            const preview = document.getElementById('char-preview');
+            preview.innerHTML = `
+                <div class="char-head" style="background: ${skinTone}">
+                    <div class="char-hair ${hairClass}" style="background: ${hairColor}">
+                        ${hairStrands}
+                    </div>
+                    <div class="char-eyes">
+                        <div class="char-eye"></div>
+                        <div class="char-eye"></div>
+                    </div>
+                    <div class="char-mouth"></div>
+                </div>
+                <div class="char-body" style="background: ${shirtColor}">
+                    <div class="char-neck" style="background: ${skinTone}"></div>
+                </div>
+            `;
+        }
+
+        function selectSkin(btn, color) {
+            document.getElementById('skin-options').querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.player.skinTone = color;
+            updatePreview();
+        }
+
+        function selectHair(btn, color) {
+            document.getElementById('hair-options').querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.player.hairColor = color;
+            updatePreview();
+        }
+
+        function selectShirt(btn, color) {
+            document.getElementById('shirt-options').querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.player.shirtColor = color;
+            updatePreview();
+        }
+
+        function startNewGame() {
+            document.getElementById('title-screen').style.display = 'none';
+            document.getElementById('character-creation').style.display = 'flex';
+            updatePreview();
+        }
+
+        function showCredits() {
+            document.getElementById('title-screen').style.display = 'none';
+            document.getElementById('credits-screen').style.display = 'flex';
+        }
+
+        function hideCredits() {
+            document.getElementById('credits-screen').style.display = 'none';
+            document.getElementById('title-screen').style.display = 'flex';
+        }
+
+        function confirmCharacter() {
+            gameState.player.name = document.getElementById('char-name').value || 'Alex';
+            gameState.player.thiefName = document.getElementById('thief-name').value || 'Thrill';
+            gameState.player.gender = document.getElementById('char-gender').value;
+
+            document.getElementById('character-creation').style.display = 'none';
+            document.getElementById('game-area').classList.add('active');
+            document.getElementById('sidebar').classList.add('active');
+
+            updateStats();
+            updatePlayerPosition('motel');
+
+            // Start intro dialogue
+            setTimeout(() => {
+                const introDialogue = cloneDialogue(dialogues.intro);
+                introDialogue[2].speaker = gameState.player.name;
+                introDialogue[3].speaker = gameState.player.name;
+                introDialogue[5].speaker = gameState.player.name;
+                playDialogue(introDialogue, () => {
+                    updateObjective('Explore the city. Find a job or... other opportunities.');
+                    saveGame();
+                });
+            }, 500);
+        }
+
+        function updateStats() {
+            document.getElementById('money-value').textContent = '$' + gameState.stats.money;
+            document.getElementById('hunger-bar').style.width = gameState.stats.hunger + '%';
+            document.getElementById('hygiene-bar').style.width = gameState.stats.hygiene + '%';
+            document.getElementById('health-bar').style.width = gameState.stats.health + '%';
+            document.getElementById('charisma-bar').style.width = gameState.stats.charisma + '%';
+            document.getElementById('fitness-bar').style.width = gameState.stats.fitness + '%';
+            document.getElementById('knowledge-bar').style.width = gameState.stats.knowledge + '%';
+            document.getElementById('criminality-bar').style.width = gameState.stats.criminality + '%';
+        }
+
+        function updateObjective(text) {
+            document.getElementById('current-objective').textContent = text;
+        }
+
+        function updatePlayerPosition(locationId) {
+            gameState.currentLocation = locationId;
+
+            // Update current location highlight
+            document.querySelectorAll('.location').forEach(l => l.classList.remove('current'));
+            const loc = document.getElementById('loc-' + locationId);
+            if (loc) {
+                loc.classList.add('current');
+            }
+
+            updateLockedStatus();
+        }
+
+        function updateLockedStatus() {
+            // Update locked status based on game state
+            const underground = document.getElementById('loc-underground');
+            const school = document.getElementById('loc-school');
+            const bank = document.getElementById('loc-bank');
+
+            if (underground) {
+                underground.classList.toggle('locked', locations.underground.locked !== false);
+            }
+            if (school) {
+                school.classList.toggle('locked', locations.school.locked !== false);
+            }
+            if (bank) {
+                bank.classList.toggle('locked', locations.bank.locked !== false);
+            }
+        }
+
+        function enterLocation(locationId) {
+            const loc = locations[locationId];
+            if (!loc) return;
+
+            if (loc.locked) {
+                alert('This location is not available yet.');
+                return;
+            }
+
+            updatePlayerPosition(locationId);
+
+            // Show location scene first
+            showLocationScene(locationId);
+
+            // Check for story triggers
+            if (locationId === 'clinic' && !gameState.flags.metCal) {
+                gameState.flags.metCal = true;
+                const calDialogue = cloneDialogue(dialogues.clinicMeetCal);
+                calDialogue[4].speaker = gameState.player.name;
+                calDialogue[6].speaker = gameState.player.name;
+                playDialogue(calDialogue, () => {
+                    gameState.flags.foundUnderground = true;
+                    locations.underground.locked = false;
+                    updateLockedStatus();
+                    updateObjective('You learned about the underground market behind the clinic...');
+                    saveGame();
+                });
+                return;
+            }
+
+            if (locationId === 'underground' && !gameState.flags.acceptedHeist) {
+                const undergroundDialogue = cloneDialogue(dialogues.undergroundFirst);
+                undergroundDialogue[4].speaker = gameState.player.name;
+                undergroundDialogue[8].speaker = gameState.player.name;
+                playDialogue(undergroundDialogue, () => {
+                    if (gameState.flags.acceptedHeist) {
+                        playDialogue(dialogues.acceptHeist, () => {
+                            gameState.inventory.push('Burner Phone', 'Disguise Kit');
+                            updateObjective('Scout the City Museum. Learn its layout and security.');
+                            saveGame();
+                        });
+                    } else {
+                        saveGame();
+                    }
+                });
+                return;
+            }
+
+            if (locationId === 'museum' && gameState.flags.acceptedHeist && !gameState.flags.gotJadeWhipInfo) {
+                const museumDialogue = cloneDialogue(dialogues.museumScout);
+                museumDialogue[2].speaker = gameState.player.name;
+                playDialogue(museumDialogue, () => {
+                    gameState.flags.gotJadeWhipInfo = true;
+                    gameState.heist.intel.push('Jade Whip location: East Wing');
+
+                    if (!gameState.flags.metInspector) {
+                        const inspectorDialogue = cloneDialogue(dialogues.inspectorMeet);
+                        inspectorDialogue[6].speaker = gameState.player.name;
+                        playDialogue(inspectorDialogue, () => {
+                            gameState.flags.metInspector = true;
+                            updateObjective('Return to the underground market when ready for the heist.');
+                            saveGame();
+                        });
+                    } else {
+                        saveGame();
+                    }
+                });
+                return;
+            }
+
+            // Check for first-time location visits (side adventures)
+            const locationDialogueMap = {
+                'grocery': { flag: 'visitedGrocery', dialogue: 'groceryVisit' },
+                'mall': { flag: 'visitedMall', dialogue: 'mallVisit' },
+                'restaurant': { flag: 'visitedRestaurant', dialogue: 'restaurantVisit' },
+                'gym': { flag: 'visitedGym', dialogue: 'gymVisit' },
+                'bar': { flag: 'visitedBar', dialogue: 'barVisit' },
+                'police': { flag: 'visitedPolice', dialogue: 'policeVisit' },
+                'motel': { flag: 'visitedMotel', dialogue: 'motelReturn' }
+            };
+
+            const locInfo = locationDialogueMap[locationId];
+            if (locInfo && !gameState.flags[locInfo.flag] && dialogues[locInfo.dialogue]) {
+                gameState.flags[locInfo.flag] = true;
+                const locDialogue = cloneDialogue(dialogues[locInfo.dialogue]);
+                // Replace player name in dialogue
+                locDialogue.forEach(line => {
+                    if (line.speaker === '{player_name}') {
+                        line.speaker = gameState.player.name;
+                    }
+                });
+                playDialogue(locDialogue, () => {
+                    saveGame();
+                });
+                return;
+            }
+
+            // No story trigger - show idle dialogue
+            showIdleDialogue();
+            saveGame();
+        }
+
+        function showLocationScene(locationId) {
+            const loc = locations[locationId];
+            document.getElementById('scene-title').textContent = loc.name;
+            document.getElementById('scene-background').textContent = loc.icon;
+
+            const actionsDiv = document.getElementById('scene-actions');
+            actionsDiv.innerHTML = '';
+
+            loc.actions.forEach(action => {
+                const btn = document.createElement('button');
+                btn.className = 'scene-action-btn';
+                btn.textContent = action;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    doLocationAction(locationId, action);
+                });
+                actionsDiv.appendChild(btn);
+            });
+
+            // Add heist button if ready
+            if (locationId === 'underground' && gameState.flags.acceptedHeist && gameState.flags.gotJadeWhipInfo) {
+                const heistBtn = document.createElement('button');
+                heistBtn.className = 'scene-action-btn';
+                heistBtn.style.borderColor = '#e94560';
+                heistBtn.style.color = '#e94560';
+                heistBtn.textContent = '🎭 Begin Museum Heist';
+                heistBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    startHeist('museum');
+                });
+                actionsDiv.appendChild(heistBtn);
+            }
+
+            document.getElementById('location-scene').style.display = 'block';
+        }
+
+        function leaveLocation() {
+            document.getElementById('location-scene').style.display = 'none';
+            showIdleDialogue();
+        }
+
+        function doLocationAction(locationId, action) {
+            // Look up action in GAME_DATA
+            const actionData = GAME_DATA.actions[action];
+
+            if (actionData) {
+                // Check cost
+                const cost = actionData.cost || 0;
+                if (cost > 0) {
+                    if (gameState.stats.money >= cost) {
+                        gameState.stats.money -= cost;
+                    } else {
+                        showNotification('Not enough money!');
+                        return;
+                    }
+                }
+
+                // Apply effects
+                const effects = actionData.effects || {};
+                for (const [stat, value] of Object.entries(effects)) {
+                    if (value === 'full') {
+                        gameState.stats[stat] = 100;
+                    } else if (gameState.stats[stat] !== undefined) {
+                        gameState.stats[stat] = Math.min(100, Math.max(0, gameState.stats[stat] + value));
+                    }
+                }
+
+                // Add intel if specified
+                if (actionData.addIntel && !gameState.heist.intel.includes(actionData.addIntel)) {
+                    gameState.heist.intel.push(actionData.addIntel);
+                }
+
+                // Advance time if specified
+                if (actionData.advanceTime) {
+                    advanceTime();
+                }
+
+                // Show message (check for conditional message)
+                let message = actionData.message;
+                if (action === 'Check wanted posters' && gameState.flags.completedMuseumHeist && actionData.messageAfterHeist) {
+                    message = actionData.messageAfterHeist;
+                }
+                showNotification(message || 'Done.');
+            } else {
+                // Fallback for undefined actions
+                showNotification('You ' + action.toLowerCase() + '.');
+            }
+
+            updateStats();
+            saveGame();
+        }
+
+        function showNotification(text) {
+            // Add to phone notifications
+            const notif = document.createElement('div');
+            notif.className = 'notification';
+            notif.textContent = text;
+            notif.style.animation = 'fadeIn 0.3s';
+            document.getElementById('phone-content').prepend(notif);
+
+            // Remove old notifications
+            const notifs = document.querySelectorAll('#phone-content .notification');
+            if (notifs.length > 5) {
+                notifs[notifs.length - 1].remove();
+            }
+
+            // Also show in location scene if it's visible
+            const locationScene = document.getElementById('location-scene');
+            if (locationScene.style.display === 'block') {
+                const sceneNotif = document.getElementById('scene-notification');
+                sceneNotif.textContent = text;
+                sceneNotif.classList.add('visible');
+
+                // Hide after 2 seconds
+                clearTimeout(sceneNotif.hideTimeout);
+                sceneNotif.hideTimeout = setTimeout(() => {
+                    sceneNotif.classList.remove('visible');
+                }, 2000);
+            }
+        }
+
+        function advanceTime() {
+            const times = ['Morning', 'Afternoon', 'Evening', 'Night'];
+            const currentIndex = times.indexOf(gameState.timeOfDay);
+
+            if (currentIndex === times.length - 1) {
+                gameState.day++;
+                gameState.timeOfDay = 'Morning';
+            } else {
+                gameState.timeOfDay = times[currentIndex + 1];
+            }
+
+            // Decay stats over time
+            gameState.stats.hunger = Math.max(0, gameState.stats.hunger - 5);
+            gameState.stats.hygiene = Math.max(0, gameState.stats.hygiene - 3);
+
+            document.getElementById('game-time').textContent = 'Day ' + gameState.day + ' - ' + gameState.timeOfDay;
+            updateStats();
+
+            // Check for game over conditions
+            if (gameState.stats.hunger <= 0) {
+                showEnding('starvation', 'You collapsed from hunger. The phantom thief dream ends here...');
+            }
+            if (gameState.stats.health <= 0) {
+                showEnding('health', 'Your health gave out. Take better care of yourself next time...');
+            }
+
+            saveGame();
+        }
+
+        // Dialogue System
+        let currentDialogue = [];
+        let dialogueIndex = 0;
+        let dialogueCallback = null;
+        let waitingForChoice = false;
+
+        // Deep clone dialogue while preserving functions
+        function cloneDialogue(dialogue) {
+            return dialogue.map(line => {
+                const cloned = { ...line };
+                if (line.choices) {
+                    cloned.choices = line.choices.map(choice => ({ ...choice }));
+                }
+                return cloned;
+            });
+        }
+
+        function showIdleDialogue() {
+            const loc = locations[gameState.currentLocation];
+            const locName = loc ? loc.name : 'the city';
+            document.getElementById('dialogue-box').style.display = 'block';
+            document.getElementById('speaker-name').textContent = 'Narrator';
+            document.getElementById('dialogue-text').textContent = `You are at ${locName}. What will you do?`;
+            document.getElementById('dialogue-choices').innerHTML = '';
+            document.getElementById('dialogue-continue').style.display = 'none';
+        }
+
+        function playDialogue(dialogue, callback) {
+            currentDialogue = dialogue;
+            dialogueIndex = 0;
+            dialogueCallback = callback;
+            waitingForChoice = false;
+            document.getElementById('dialogue-box').style.display = 'block';
+            document.getElementById('dialogue-choices').innerHTML = '';
+            showDialogueLine();
+        }
+
+        function showDialogueLine() {
+            if (dialogueIndex >= currentDialogue.length) {
+                // Keep dialogue box visible with contextual message
+                showIdleDialogue();
+                waitingForChoice = false;
+                if (dialogueCallback) dialogueCallback();
+                return;
+            }
+
+            const line = currentDialogue[dialogueIndex];
+            document.getElementById('speaker-name').textContent = line.speaker;
+            document.getElementById('dialogue-text').textContent = line.text;
+
+            if (line.choices) {
+                waitingForChoice = true;
+                document.getElementById('dialogue-continue').style.display = 'none';
+                const choicesDiv = document.getElementById('dialogue-choices');
+                choicesDiv.innerHTML = '';
+
+                line.choices.forEach((choice, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'choice-btn';
+                    btn.textContent = choice.text;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (choice.effect) choice.effect();
+                        updateStats();
+                        waitingForChoice = false;
+                        dialogueIndex++;
+                        document.getElementById('dialogue-continue').style.display = 'block';
+                        showDialogueLine();
+                    };
+                    choicesDiv.appendChild(btn);
+                });
+            } else {
+                waitingForChoice = false;
+                document.getElementById('dialogue-continue').style.display = 'block';
+                document.getElementById('dialogue-choices').innerHTML = '';
+            }
+        }
+
+        function advanceDialogue() {
+            if (document.getElementById('dialogue-box').style.display === 'block' && !waitingForChoice) {
+                dialogueIndex++;
+                showDialogueLine();
+            }
+        }
+
+        document.getElementById('dialogue-box').addEventListener('click', (e) => {
+            if (!e.target.classList.contains('choice-btn')) {
+                advanceDialogue();
+            }
+        });
+
+        // Heist System
+        let heistPhaseIndex = 0;
+        let heistSceneIndex = 0;
+
+        function startHeist(heistId) {
+            document.getElementById('location-scene').style.display = 'none';
+            document.getElementById('heist-mode').style.display = 'block';
+
+            gameState.heist.phase = 'infiltration';
+            heistPhaseIndex = 0;
+            heistSceneIndex = 0;
+
+            showHeistScene(heistId);
+        }
+
+        function showHeistScene(heistId) {
+            const heist = heistSequences[heistId];
+            const phases = ['infiltration', 'callingCard', 'escape'];
+            const phase = phases[heistPhaseIndex];
+
+            if (!heist[phase] || heistSceneIndex >= heist[phase].length) {
+                // Move to next phase
+                heistPhaseIndex++;
+                heistSceneIndex = 0;
+
+                if (heistPhaseIndex >= phases.length) {
+                    // Heist complete!
+                    completeHeist(heistId);
+                    return;
+                }
+            }
+
+            const scene = heist[phases[heistPhaseIndex]][heistSceneIndex];
+
+            document.getElementById('heist-phase').textContent = 'Phase: ' + phases[heistPhaseIndex].charAt(0).toUpperCase() + phases[heistPhaseIndex].slice(1);
+            document.getElementById('heist-scene-icon').textContent = scene.icon;
+            document.getElementById('heist-description').textContent = scene.description;
+
+            const optionsDiv = document.getElementById('heist-options');
+            optionsDiv.innerHTML = '';
+
+            scene.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'heist-option';
+
+                const statValue = gameState.stats[option.stat];
+                const canDo = statValue >= option.req;
+
+                btn.innerHTML = `
+                    ${option.text}
+                    <div class="stat-req ${canDo ? 'met' : 'not-met'}">
+                        Requires: ${option.stat.charAt(0).toUpperCase() + option.stat.slice(1)} ${option.req} (You have: ${statValue})
+                    </div>
+                `;
+
+                btn.onclick = () => {
+                    if (canDo) {
+                        if (option.qte) {
+                            startQTE(() => {
+                                heistSceneIndex++;
+                                showHeistScene(heistId);
+                            }, () => {
+                                showEnding('caught', 'Inspector Mori caught you! "I knew you were suspicious from the start."');
+                            });
+                        } else {
+                            heistSceneIndex++;
+                            showHeistScene(heistId);
+                        }
+                    } else {
+                        showEnding('failed', 'You didn\'t have the skills to pull this off. Train harder and try again.');
+                    }
+                };
+
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function completeHeist(heistId) {
+            document.getElementById('heist-mode').style.display = 'none';
+            gameState.flags.completedMuseumHeist = true;
+            gameState.stats.money += 5000;
+            gameState.stats.criminality = Math.min(100, gameState.stats.criminality + 20);
+            gameState.inventory.push('Jade Whip (Stolen)');
+            updateStats();
+
+            const completionDialogue = [
+                { speaker: 'Narrator', text: 'You did it. The Jade Whip is yours.' },
+                { speaker: 'Narrator', text: 'Your heart pounds as you make your escape into the night.' },
+                { speaker: gameState.player.name, text: '(Thinking) That was... incredible. The thrill of it all.' },
+                { speaker: 'Narrator', text: 'You receive a payment of $5,000 for your first successful heist.' },
+                { speaker: 'Narrator', text: 'The city sleeps, unaware that a new phantom thief has been born.' },
+                { speaker: 'Narrator', text: 'Chapter 1 Complete: The Jade Whip' },
+                { speaker: 'Narrator', text: 'Your journey as ' + gameState.player.thiefName + ' has only just begun...' }
+            ];
+            playDialogue(completionDialogue, () => {
+                showEnding('chapter1', 'Congratulations! You completed Chapter 1.\n\nThe Jade Whip is yours, and Inspector Mori is on your trail.\n\nMore chapters coming soon...');
+            });
+        }
+
+        // QTE System
+        let qteActive = false;
+        let qteSuccess = null;
+        let qteFail = null;
+        let qteTimer = null;
+
+        function startQTE(onSuccess, onFail) {
+            qteActive = true;
+            qteSuccess = onSuccess;
+            qteFail = onFail;
+
+            const keys = ['E', 'Q', 'R', 'F', 'SPACE'];
+            const key = keys[Math.floor(Math.random() * keys.length)];
+
+            document.getElementById('qte-key').textContent = key === 'SPACE' ? '␣' : key;
+            document.getElementById('qte-container').style.display = 'flex';
+            document.getElementById('qte-timer-fill').style.width = '100%';
+
+            let timeLeft = 100;
+            qteTimer = setInterval(() => {
+                timeLeft -= 2;
+                document.getElementById('qte-timer-fill').style.width = timeLeft + '%';
+
+                if (timeLeft <= 0) {
+                    clearInterval(qteTimer);
+                    qteActive = false;
+                    document.getElementById('qte-container').style.display = 'none';
+                    if (qteFail) qteFail();
+                }
+            }, 50);
+
+            document.addEventListener('keydown', handleQTE);
+
+            function handleQTE(e) {
+                if (!qteActive) return;
+
+                const pressed = e.key.toUpperCase();
+                const required = key === 'SPACE' ? ' ' : key;
+
+                if (pressed === required || (key === 'SPACE' && e.code === 'Space')) {
+                    clearInterval(qteTimer);
+                    qteActive = false;
+                    document.getElementById('qte-container').style.display = 'none';
+                    document.removeEventListener('keydown', handleQTE);
+                    if (qteSuccess) qteSuccess();
+                }
+            }
+        }
+
+        // Ending System
+        function showEnding(type, text) {
+            document.getElementById('ending-screen').style.display = 'flex';
+
+            let title = 'GAME OVER';
+            if (type === 'chapter1') title = 'CHAPTER 1 COMPLETE';
+            else if (type === 'rejected') title = 'THE END';
+
+            document.getElementById('ending-title').textContent = title;
+            document.getElementById('ending-text').textContent = text;
+        }
+
+        // Inventory System
+        function showInventory() {
+            const itemsDiv = document.getElementById('inventory-items');
+            itemsDiv.innerHTML = '';
+
+            if (gameState.inventory.length === 0) {
+                itemsDiv.innerHTML = '<p style="color:#888">No items yet.</p>';
+            } else {
+                gameState.inventory.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'inventory-item';
+                    div.textContent = item;
+                    itemsDiv.appendChild(div);
+                });
+            }
+
+            document.getElementById('inventory-popup').style.display = 'block';
+        }
+
+        function closeInventory() {
+            document.getElementById('inventory-popup').style.display = 'none';
+        }
+
+        function showNotes() {
+            const notesDiv = document.getElementById('notes-items');
+            notesDiv.innerHTML = '';
+
+            if (gameState.heist.intel.length === 0) {
+                notesDiv.innerHTML = '<p style="color:#888">No intel yet. Scout locations!</p>';
+            } else {
+                gameState.heist.intel.forEach(note => {
+                    const div = document.createElement('div');
+                    div.className = 'notes-item';
+                    div.textContent = note;
+                    notesDiv.appendChild(div);
+                });
+            }
+
+            document.getElementById('notes-popup').style.display = 'block';
+        }
+
+        function closeNotes() {
+            document.getElementById('notes-popup').style.display = 'none';
+        }
+
+        // Set up location click handlers
+        document.querySelectorAll('.location').forEach(loc => {
+            loc.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (loc.classList.contains('locked')) {
+                    showNotification('This location is not available yet.');
+                    return;
+                }
+                const locationId = loc.id.replace('loc-', '');
+                enterLocation(locationId);
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (document.getElementById('location-scene').style.display === 'block') {
+                    leaveLocation();
+                }
+                if (document.getElementById('inventory-popup').style.display === 'block') {
+                    closeInventory();
+                }
+                if (document.getElementById('notes-popup').style.display === 'block') {
+                    closeNotes();
+                }
+            }
+        });
+
+        // Show continue button if save exists
+        if (hasSaveGame()) {
+            document.getElementById('continue-btn').style.display = 'inline-block';
+        }
+    </script>
+</body>
+</html>
