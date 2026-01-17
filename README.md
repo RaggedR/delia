@@ -4,11 +4,12 @@ A visual novel / life-sim RPG about a fresh graduate who becomes a phantom thief
 
 ## Play the Game
 
-**Play online:** [https://raggedr.github.io/delia](https://raggedr.github.io/delia)
+**Browser version:** Download `index.html` and open it in any browser - no server or installation required.
 
-**Or locally:**
-- Browser version: Open `index.html` in any browser - no server required
-- Text-based version: `python3 game.py`
+**Text-based version:**
+```bash
+python3 game.py
+```
 
 ## Story
 
